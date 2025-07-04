@@ -16,7 +16,12 @@ import { initializeSbtListeners } from './services/sbtListenerService'; // New S
 const app = express();
 const port = process.env.PORT || 3001;
 
+// Middleware to parse JSON bodies
 app.use(express.json());
+
+// Middleware to serve static files from the 'public' directory
+// This will allow access to files like http://localhost:3001/images/nfts/badges/a1.png
+app.use(express.static('public'));
 
 // Root endpoint
 app.get('/', (req: Request, res: Response) => {
