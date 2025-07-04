@@ -12,14 +12,15 @@ const getStaticNftMetadata = (level: string, type: 'Badge' | 'Certificate', toke
     return null; // Invalid level
   }
 
+  const apiBaseUrl = process.env.API_BASE_URL || 'http://localhost:3001'; // Fallback to localhost if not set
+
   // Customize this metadata as needed. This is just a placeholder structure.
   // In a real scenario, these details would be more specific to your NFTs.
   const metadata = {
     name: `${type} of ${lowerLevel.toUpperCase()} Completion`,
     description: `This ${type.toLowerCase()} certifies (or represents) the completion of the ${lowerLevel.toUpperCase()} language level. Token ID: ${tokenId}.`,
-    image: `https://example.com/images/nfts/${type.toLowerCase()}/${lowerLevel}/${tokenId}.png`, // Placeholder dynamic image URL based on type, level, and tokenID
-    // You can also have a static image per level:
-    // image: `https://example.com/images/nfts/${type.toLowerCase()}/${lowerLevel}.png`,
+    // Construct image URL using API_BASE_URL and conventional path
+    image: `${apiBaseUrl}/images/nfts/${type.toLowerCase()}s/${lowerLevel}.png`, // e.g., https://hackathon.omerharuncetin.com/images/nfts/badges/a1.png
     attributes: [
       {
         trait_type: "Level",
