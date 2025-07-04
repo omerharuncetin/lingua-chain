@@ -13,3 +13,6 @@
 [submodule "packages/sbt/lib/openzeppelin-contracts"]
 	path = packages/sbt/lib/openzeppelin-contracts
 	url = https://github.com/OpenZeppelin/openzeppelin-contracts
+[submodule "packages/sbt/lib/openzeppelin-contracts-upgradeable"]
+	path = packages/sbt/lib/openzeppelin-contracts-upgradeable
+	url = https://github.com/OpenZeppelin/openzeppelin-contracts-upgradeable
