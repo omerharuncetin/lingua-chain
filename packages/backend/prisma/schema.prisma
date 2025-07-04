@@ -84,8 +84,11 @@ model Certificate {
   languageLevel String // e.g., "A1", "A2"
   issueDate   DateTime @default(now())
   certificateUrl String // URL to the certificate image/NFT metadata
+  tokenId       String   // The NFT token ID from the event
 
-  @@unique([userId, languageLevel])
+  @@unique([userId, languageLevel]) // Assuming one certificate per user per level
+  // If a user could have multiple distinct tokens for the same level, this unique constraint would need tokenId.
+  // For now, assuming the above is fine and the listener handles logic if a new token for an existing level is minted.
 }
 
 // Badge table
@@ -96,6 +99,7 @@ model Badge {
   languageLevel String // e.g., "A1", "A2"
   issueDate     DateTime @default(now())
   badgeUrl      String   // URL to the badge image/NFT metadata
+  tokenId       String   // The NFT token ID from the event
 
-  @@unique([userId, languageLevel])
+  @@unique([userId, languageLevel]) // Assuming one badge per user per level
 }

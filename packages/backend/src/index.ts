@@ -8,6 +8,10 @@ import avatarRoutes from './routes/avatarRoutes';
 import userAvatarRoutes from './routes/userAvatarRoutes';
 import badgeRoutes from './routes/badgeRoutes'; // Contains both generic and user-specific logic
 import certificateRoutes from './routes/certificateRoutes'; // Contains both generic and user-specific logic
+import nftMetadataRoutes from './routes/nftMetadataRoutes'; // New routes for NFT metadata
+
+// Import services
+import { initializeSbtListeners } from './services/sbtListenerService'; // New SBT Listener Service
 
 const app = express();
 const port = process.env.PORT || 3001;
@@ -50,6 +54,9 @@ app.use('/api/certificates', certificateRoutes);
 // User-specific certificates: /api/users/:userId/certificates
 app.use('/api/users/:userId/certificates', certificateRoutes); // certificateRoutes is set up with mergeParams
 
+// NFT Metadata routes (for token URIs)
+app.use('/api/nft', nftMetadataRoutes);
+
 
 // Basic error handler (improved version can be added)
 app.use((err: Error, req: Request, res: Response, next: NextFunction) => {
@@ -71,19 +78,27 @@ if (process.env.NODE_ENV !== 'test') {
   app.listen(port, () => {
     console.log(`Server running on http://localhost:${port}`);
     console.log('Registered routes:');
+    // Simple route logging (can be made more sophisticated)
     app._router.stack.forEach(function(r: any){
       if (r.route && r.route.path){
         console.log(Object.keys(r.route.methods).join(', ').toUpperCase() + '\t' + r.route.path);
-      } else if (r.name === 'router') { // For sub-routers
+      } else if (r.name === 'router' && r.handle.stack) {
         r.handle.stack.forEach(function(sub_r: any){
             if (sub_r.route && sub_r.route.path){
-                 // Path might be relative to the sub-router's mount point
-                 // For simplicity, just logging the sub-path
-                 console.log(Object.keys(sub_r.route.methods).join(', ').toUpperCase() + '\t' + (r.regexp.source.replace(/\\\/\?\(\?=\\\/\|\$\)/, '').replace('^\\/', '/') + sub_r.route.path.substring(1)).replace(/\\/g, ''));
+                 let basePath = r.regexp.source.replace('^\\','').replace('\\/?(?=\\/|$)','').replace(/\\/g, '');
+                 if (basePath.endsWith('/')) basePath = basePath.slice(0,-1);
+                 if (basePath === "?(.*)") basePath = ""; // Ignore base for wildcard router if not more specific
+
+                 console.log(Object.keys(sub_r.route.methods).join(', ').toUpperCase() + '\t' + basePath + sub_r.route.path);
             }
         });
       }
     });
+
+    // Initialize SBT Listeners after server starts (or before, depending on preference)
+    console.log("Initializing SBT contract listeners...");
+    initializeSbtListeners();
+
   });
 }
 
