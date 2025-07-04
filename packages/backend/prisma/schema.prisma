@@ -1,0 +1,101 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// User table
+model User {
+  id             String @id @default(cuid())
+  walletAddress  String @unique
+  username       String?
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+
+  progress      UserProgress[]
+  leaderboard   LeaderboardEntry[]
+  avatars       UserAvatar[]
+  certificates  Certificate[]
+  badges        Badge[]
+}
+
+// UserProgress table
+model UserProgress {
+  id          String @id @default(cuid())
+  userId      String
+  user        User   @relation(fields: [userId], references: [id])
+  language    String // e.g., "A1", "A2"
+  lesson      Int    // Current lesson number (1-10)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@unique([userId, language])
+}
+
+// LeaderboardEntry table
+model LeaderboardEntry {
+  id          String @id @default(cuid())
+  userId      String
+  user        User   @relation(fields: [userId], references: [id])
+  language    String // "A1", "A2", ..., "ALL"
+  points      Int    @default(0)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@unique([userId, language])
+}
+
+// Avatar table (NFTs for marketplace)
+model Avatar {
+  id          String @id @default(cuid())
+  name        String @unique // e.g., "Avatar1", "Avatar2"
+  description String?
+  price       Float     // Price in USDC
+  imageUrl    String?   // URL to the avatar image
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  ownedBy     UserAvatar[]
+}
+
+// UserAvatar table (junction table for User and Avatar)
+model UserAvatar {
+  id          String @id @default(cuid())
+  userId      String
+  user        User   @relation(fields: [userId], references: [id])
+  avatarId    String
+  avatar      Avatar @relation(fields: [avatarId], references: [id])
+  purchaseDate DateTime @default(now())
+
+  @@unique([userId, avatarId])
+}
+
+// Certificate table
+model Certificate {
+  id          String @id @default(cuid())
+  userId      String
+  user        User   @relation(fields: [userId], references: [id])
+  languageLevel String // e.g., "A1", "A2"
+  issueDate   DateTime @default(now())
+  certificateUrl String // URL to the certificate image/NFT metadata
+
+  @@unique([userId, languageLevel])
+}
+
+// Badge table
+model Badge {
+  id            String @id @default(cuid())
+  userId        String
+  user          User   @relation(fields: [userId], references: [id])
+  languageLevel String // e.g., "A1", "A2"
+  issueDate     DateTime @default(now())
+  badgeUrl      String   // URL to the badge image/NFT metadata
+
+  @@unique([userId, languageLevel])
+}
