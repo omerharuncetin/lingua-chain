@@ -1,0 +1,19 @@
+{
+  "name": "foundry",
+  "version": "1.0.0",
+  "description": "This project demonstrates how to add smart contracts to your project using [Foundry](https://book.getfoundry.sh/). It provides a sample `Message` contract, a test and deployment scripts.",
+  "main": "index.js",
+  "directories": {
+    "lib": "lib",
+    "test": "test"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "@selfxyz/contracts": "^1.2.0"
+  }
+}
