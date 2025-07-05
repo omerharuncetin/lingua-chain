@@ -12,9 +12,9 @@ contract LinguaA2Certificate is ERC721, Ownable {
         Ownable()
     {}
 
-    function _baseURI() internal pure override returns (string memory) {
-        return "https://hackathon.omerharuncetin.com/api/certificates/a2/";
-    }
+  function _baseURI() internal pure override returns (string memory) {
+    return 'https://hackathon.omerharuncetin.com/api/nft/certificates/a2/';
+  }
 
     function safeMint(address to) public onlyOwner returns (uint256) {
         uint256 tokenId = _nextTokenId++;

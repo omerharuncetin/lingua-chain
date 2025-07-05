@@ -12,9 +12,9 @@ contract LinguaC1Certificate is ERC721, Ownable {
         Ownable()
     {}
 
-    function _baseURI() internal pure override returns (string memory) {
-        return "https://hackathon.omerharuncetin.com/api/certificates/c1/";
-    }
+  function _baseURI() internal pure override returns (string memory) {
+    return 'https://hackathon.omerharuncetin.com/api/nft/certificates/c1/';
+  }
 
     function safeMint(address to) public onlyOwner returns (uint256) {
         uint256 tokenId = _nextTokenId++;
