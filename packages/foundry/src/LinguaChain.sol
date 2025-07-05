@@ -30,11 +30,15 @@ contract LinguaChain is SelfVerificationRoot, Ownable {
     bytes memory userDefinedData
   ) public view override returns (bytes32) {
     // Replace with your actual config ID from the tool
-    return 0x1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef;
+    return configId;
   }
 
   function setConfigId(bytes32 _configId) external onlyOwner {
     configId = _configId;
+  }
+
+  function setScope(uint256 _scopeId) external onlyOwner {
+    _scope = _scopeId;
   }
 
   // Override to handle successful verification
@@ -50,7 +54,7 @@ contract LinguaChain is SelfVerificationRoot, Ownable {
     // Example: Simple verification check
     require(certificateAddress != address(0), 'Incorrect certificate address!');
     require(bytes(output.nationality).length > 0, 'Nationality required!');
-    require(compareStrings(output.name, name), 'User name is not correct!');
+    //require(compareStrings(output.name, name), 'User name is not correct!');
 
     ISafeMintableNFT(certificateAddress).safeMint(userAddress);
   }

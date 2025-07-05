@@ -11,7 +11,7 @@ import {Script} from '../lib/forge-std/src/Script.sol';
 
 contract CertificateScript is Script {
   function run() public {
-    vm.createSelectFork('celo-alfajore');
+    vm.createSelectFork('celo-alfajores');
     vm.startBroadcast();
     LinguaA1Certificate a1 = new LinguaA1Certificate();
     LinguaA2Certificate a2 = new LinguaA2Certificate();
