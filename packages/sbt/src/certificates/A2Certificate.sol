@@ -11,7 +11,7 @@ contract LinguaA2Certificate is ERC721, Ownable {
   constructor() ERC721('A2 Certificate', 'A2Cert') Ownable() {}
 
   modifier ownerOrLinguaContract() {
-    require(_msgSender() != owner() && _msgSender() != linguaContract, 'Unauthorized!');
+    require(_msgSender() == owner() || _msgSender() == linguaContract, 'Authorized!');
     _;
   }
 

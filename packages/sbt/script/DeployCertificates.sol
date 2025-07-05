@@ -13,19 +13,19 @@ contract CertificateScript is Script {
   function run() public {
     vm.createSelectFork('celo-alfajores');
     vm.startBroadcast();
-    LinguaA1Certificate a1 = new LinguaA1Certificate();
+    //LinguaA1Certificate a1 = new LinguaA1Certificate();
     LinguaA2Certificate a2 = new LinguaA2Certificate();
     LinguaB1Certificate b1 = new LinguaB1Certificate();
     LinguaB2Certificate b2 = new LinguaB2Certificate();
     LinguaC1Certificate c1 = new LinguaC1Certificate();
     LinguaC2Certificate c2 = new LinguaC2Certificate();
 
-    a1.setLinguaContract(0x64B3c39c7FE4778f8d546Aea27a490F0FBb584fF);
-    a2.setLinguaContract(0x64B3c39c7FE4778f8d546Aea27a490F0FBb584fF);
-    b1.setLinguaContract(0x64B3c39c7FE4778f8d546Aea27a490F0FBb584fF);
-    b2.setLinguaContract(0x64B3c39c7FE4778f8d546Aea27a490F0FBb584fF);
-    c1.setLinguaContract(0x64B3c39c7FE4778f8d546Aea27a490F0FBb584fF);
-    c2.setLinguaContract(0x64B3c39c7FE4778f8d546Aea27a490F0FBb584fF);
+    //a1.setLinguaContract(0x352C49d519AF8d9d294345E29D50c2f6d6E3901E);
+    a2.setLinguaContract(0x352C49d519AF8d9d294345E29D50c2f6d6E3901E);
+    b1.setLinguaContract(0x352C49d519AF8d9d294345E29D50c2f6d6E3901E);
+    b2.setLinguaContract(0x352C49d519AF8d9d294345E29D50c2f6d6E3901E);
+    c1.setLinguaContract(0x352C49d519AF8d9d294345E29D50c2f6d6E3901E);
+    c2.setLinguaContract(0x352C49d519AF8d9d294345E29D50c2f6d6E3901E);
     vm.stopBroadcast();
   }
 }
