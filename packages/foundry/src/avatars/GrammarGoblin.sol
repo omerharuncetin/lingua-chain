@@ -11,7 +11,7 @@ contract GrammarGoblin is ERC721, Ownable {
   constructor(address initialOwner) ERC721('Grammar Goblin', 'Grammar Goblin') Ownable(initialOwner) {}
 
   function _baseURI() internal pure override returns (string memory) {
-    return 'https://hackathon.omerharuncetin.com/grammar-goblin';
+    return 'https://hackathon.omerharuncetin.com/api/nft/grammar-goblin/';
   }
 
   function safeMint(address to) public onlyOwner returns (uint256) {

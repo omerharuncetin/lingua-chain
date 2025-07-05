@@ -11,7 +11,7 @@ contract PolyglotPanda is ERC721, Ownable {
   constructor(address initialOwner) ERC721('Polyglot Panda', 'Polyglot Panda') Ownable(initialOwner) {}
 
   function _baseURI() internal pure override returns (string memory) {
-    return 'https://hackathon.omerharuncetin.com/polyglot-panda';
+    return 'https://hackathon.omerharuncetin.com/api/nft/polyglot-panda/';
   }
 
   function safeMint(address to) public onlyOwner returns (uint256) {

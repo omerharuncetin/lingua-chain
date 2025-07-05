@@ -5,8 +5,7 @@ import { PropsWithChildren } from 'react'
 import { cookieToInitialState, WagmiProvider, type Config } from 'wagmi'
 import { WALLETCONNECT_ADAPTER, WALLETCONNECT_PROJECT_ID } from '@/utils/web3'
 import { SITE_NAME, SITE_INFO, SITE_URL } from '@/utils/site'
-import { ETH_CHAINS } from '@/utils/network'
-import { mainnet } from '@reown/appkit/networks'
+import { celoAlfajores, mainnet } from '@reown/appkit/networks'
 
 interface Props extends PropsWithChildren {
   cookies: string | null
@@ -22,8 +21,8 @@ const metadata = {
 createAppKit({
   adapters: [WALLETCONNECT_ADAPTER],
   projectId: WALLETCONNECT_PROJECT_ID,
-  networks: [mainnet, ...ETH_CHAINS],
-  defaultNetwork: mainnet,
+  networks: [celoAlfajores],
+  defaultNetwork: celoAlfajores,
   metadata: metadata,
   features: {
     analytics: true, // Optional - defaults to your Cloud configuration

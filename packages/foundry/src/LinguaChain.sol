@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MIT
-pragma solidity 0.8.30;
+pragma solidity 0.8.28;
 
 import {SelfVerificationRoot} from '@selfxyz/contracts/contracts/abstract/SelfVerificationRoot.sol';
 import {ISelfVerificationRoot} from '@selfxyz/contracts/contracts/interfaces/ISelfVerificationRoot.sol';
@@ -15,8 +15,6 @@ interface ISafeMintableNFT {
 contract LinguaChain is SelfVerificationRoot, Ownable {
   // Your app-specific configuration ID
   bytes32 public configId;
-
-  event CertificateMinted(address indexed user, address certificateContract);
 
   constructor(
     address _identityVerificationHubV2, // V2 Hub address
@@ -52,11 +50,9 @@ contract LinguaChain is SelfVerificationRoot, Ownable {
     // Example: Simple verification check
     require(certificateAddress != address(0), 'Incorrect certificate address!');
     require(bytes(output.nationality).length > 0, 'Nationality required!');
-    require(compareStrings(output.name, name), 'User name is not correct!');
+    //require(compareStrings(output.name, name), 'User name is not correct!');
 
     ISafeMintableNFT(certificateAddress).safeMint(userAddress);
-
-    emit CertificateMinted(userAddress, certificateAddress);
   }
 
   function compareStrings(string memory a, string memory b) public pure returns (bool) {

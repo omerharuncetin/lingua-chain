@@ -11,7 +11,7 @@ contract VerbViper is ERC721, Ownable {
   constructor(address initialOwner) ERC721('Verb Viper', 'Verb Viper') Ownable(initialOwner) {}
 
   function _baseURI() internal pure override returns (string memory) {
-    return 'https://hackathon.omerharuncetin.com/verb-viper';
+    return 'https://hackathon.omerharuncetin.com/api/nft/verb-viper/';
   }
 
   function safeMint(address to) public onlyOwner returns (uint256) {
