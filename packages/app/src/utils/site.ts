@@ -1,9 +1,8 @@
-export const SITE_EMOJI = '⚡'
-export const SITE_NAME = 'Nexth'
-export const SITE_INFO = 'Quickly ship Web3 Apps'
-export const SITE_DESCRIPTION =
-  'A Next.js + Ethereum starter kit with Viem, Wagmi, Web3Modal, SIWE, Tailwind, daisyUI and more!'
-export const SITE_URL = 'https://nexth.vercel.app'
+export const SITE_EMOJI = '⛓️'
+export const SITE_NAME = 'LinguaChain'
+export const SITE_INFO = 'Learn Language While Earning!'
+export const SITE_DESCRIPTION = 'Learn Language While Earning!'
+export const SITE_URL = 'https://lingua-chain.vercel.app'
 
-export const SOCIAL_TWITTER = 'wslyvh'
-export const SOCIAL_GITHUB = 'wslyvh/nexth'
+export const SOCIAL_TWITTER = 'omerharuncetin'
+export const SOCIAL_GITHUB = 'omerharuncetin/lingua-chain'
