@@ -20,7 +20,7 @@ contract LinguaA1Certificate is ERC721, Ownable {
   }
 
   function _baseURI() internal pure override returns (string memory) {
-    return 'https://hackathon.omerharuncetin.com/api/certificates/a1/';
+    return 'https://hackathon.omerharuncetin.com/api/nft/certificates/a1/';
   }
 
   function safeMint(address to) public ownerOrLinguaContract returns (uint256) {

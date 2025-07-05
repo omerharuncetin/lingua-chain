@@ -20,7 +20,7 @@ contract LinguaC2Certificate is ERC721, Ownable {
   }
 
   function _baseURI() internal pure override returns (string memory) {
-    return 'https://hackathon.omerharuncetin.com/api/certificates/c2/';
+    return 'https://hackathon.omerharuncetin.com/api/nft/certificates/c2/';
   }
 
   function safeMint(address to) public ownerOrLinguaContract returns (uint256) {

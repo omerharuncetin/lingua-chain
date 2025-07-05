@@ -30,6 +30,7 @@ router.post('/', async (req: Request, res: Response) => {
     const existingUserAvatar = await prisma.userAvatar.findUnique({
       where: { userId_avatarId: { userId, avatarId } },
     })
+
     if (existingUserAvatar) {
       return res.status(409).json({ error: 'User already owns this avatar.' })
     }

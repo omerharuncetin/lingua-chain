@@ -16,8 +16,6 @@ contract LinguaChain is SelfVerificationRoot, Ownable {
   // Your app-specific configuration ID
   bytes32 public configId;
 
-  event CertificateMinted(address indexed user, address certificateContract);
-
   constructor(
     address _identityVerificationHubV2, // V2 Hub address
     uint256 _scope // Application-specific scope identifier
@@ -55,8 +53,6 @@ contract LinguaChain is SelfVerificationRoot, Ownable {
     require(compareStrings(output.name, name), 'User name is not correct!');
 
     ISafeMintableNFT(certificateAddress).safeMint(userAddress);
-
-    emit CertificateMinted(userAddress, certificateAddress);
   }
 
   function compareStrings(string memory a, string memory b) public pure returns (bool) {

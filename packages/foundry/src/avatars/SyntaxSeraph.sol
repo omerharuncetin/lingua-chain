@@ -11,7 +11,7 @@ contract SyntaxSeraph is ERC721, Ownable {
   constructor(address initialOwner) ERC721('Syntax Seraph', 'Syntax Seraph') Ownable(initialOwner) {}
 
   function _baseURI() internal pure override returns (string memory) {
-    return 'https://hackathon.omerharuncetin.com/syntax-seraph';
+    return 'https://hackathon.omerharuncetin.com/api/nft/syntax-seraph/';
   }
 
   function safeMint(address to) public onlyOwner returns (uint256) {
