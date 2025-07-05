@@ -12,5 +12,5 @@ celo-alfajores = "https://alfajores-forno.celo-testnet.org"
 celo = "https://forno.celo.org"
 
 [etherscan]
-celo-alfajores = { key = "${CELOSCAN_API_KEY}", url = "https://api-alfajores.celoscan.io/api"}
-celo = { key = "${CELOSCAN_API_KEY}", url = "https://api.celoscan.io/api"}
+celo-alfajores = { key = "9C2N5NJCEFWWM1JEBH2RM13SKN8TQPGEP4", url = "https://api-alfajores.celoscan.io/api"}
+celo = { key = "9C2N5NJCEFWWM1JEBH2RM13SKN8TQPGEP4", url = "https://api.celoscan.io/api"}
