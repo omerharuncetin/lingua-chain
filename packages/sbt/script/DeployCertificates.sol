@@ -20,12 +20,12 @@ contract CertificateScript is Script {
     LinguaC1Certificate c1 = new LinguaC1Certificate();
     LinguaC2Certificate c2 = new LinguaC2Certificate();
 
-    a1.setLinguaContract(address(0));
-    a2.setLinguaContract(address(0));
-    b1.setLinguaContract(address(0));
-    b2.setLinguaContract(address(0));
-    c1.setLinguaContract(address(0));
-    c2.setLinguaContract(address(0));
+    a1.setLinguaContract(0x64B3c39c7FE4778f8d546Aea27a490F0FBb584fF);
+    a2.setLinguaContract(0x64B3c39c7FE4778f8d546Aea27a490F0FBb584fF);
+    b1.setLinguaContract(0x64B3c39c7FE4778f8d546Aea27a490F0FBb584fF);
+    b2.setLinguaContract(0x64B3c39c7FE4778f8d546Aea27a490F0FBb584fF);
+    c1.setLinguaContract(0x64B3c39c7FE4778f8d546Aea27a490F0FBb584fF);
+    c2.setLinguaContract(0x64B3c39c7FE4778f8d546Aea27a490F0FBb584fF);
     vm.stopBroadcast();
   }
 }
