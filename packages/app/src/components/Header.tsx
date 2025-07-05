@@ -19,7 +19,6 @@ export function Header() {
       </Link>
       {account.isConnected &&
         <div className='flex gap-2 items-center'>
-          asdasd
           <Link href='/dashboard'>
             <span className='text-lg font-bold'><HomeIcon /></span>
           </Link>
