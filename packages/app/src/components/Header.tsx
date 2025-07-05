@@ -4,9 +4,8 @@ import React, { useEffect, useState } from 'react'
 import { LinkComponent } from './LinkComponent'
 import { SITE_EMOJI } from '@/utils/site'
 import { Connect } from './Connect'
-import { HomeIcon, NewspaperIcon, ChartBarSquareIcon, ClipboardDocumentCheckIcon } from '@heroicons/react/24/outline'
+import { BookCheckIcon, HomeIcon, RouteIcon, TrophyIcon } from 'lucide-react';
 import { useAppKitAccount } from '@reown/appkit/react'
-import Link from 'next/link'
 import { useCreateUser, useGetUsers } from '@/app/hooks/useUserHooks'
 
 
@@ -36,16 +35,16 @@ export function Header() {
       {account.isConnected &&
         <div className='flex gap-2 items-center'>
           <LinkComponent href='/dashboard'>
-            <span className='text-lg font-bold'>🏠</span>
+            <span className='text-lg font-bold'><HomeIcon width={20} height={20} /></span>
           </LinkComponent>
-          <LinkComponent href='/'>
-            <span className='text-lg font-bold'>📰</span>
+          <LinkComponent href='/certificate'>
+            <span className='text-lg font-bold'><BookCheckIcon width={20} height={20} /></span>
           </LinkComponent>
           <LinkComponent href='/learning-path'>
-            <span className='text-lg font-bold'>📜</span>
+            <span className='text-lg font-bold'><RouteIcon width={20} height={20} /></span>
           </LinkComponent>
-          <LinkComponent href='/'>
-            <span className='text-lg font-bold'>📊</span>
+          <LinkComponent href='/leaderboard'>
+            <span className='text-lg font-bold'><TrophyIcon width={20} height={20} /></span>
           </LinkComponent>
           <Connect />
         </div>}

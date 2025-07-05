@@ -3,33 +3,27 @@ import LessonCard from "./LessonCard";
 import CertificateSection from "./CertificateSection";
 import { useRouter } from "next/navigation";
 import { cefrLevels } from "@/data/lessonData";
-import { useGetUserProgressAll, useGetUserProgressByLanguage } from "@/app/hooks/useUserProgressHooks";
-import { useGetUserById, useGetUsers } from "@/app/hooks/useUserHooks";
-import { useAppKitAccount } from "@reown/appkit/react";
+import { useGetUserProgressByLanguage } from "@/app/hooks/useUserProgressHooks";
 
 const LearningRoad = () => {
   const navigate = useRouter();
   const [selectedLevel, setSelectedLevel] = useState<string>("A1");
   const [hoveredLesson, setHoveredLesson] = useState<number | null>(null);
-  const account = useAppKitAccount();
 
-  const users = useGetUsers(account.address?.toLowerCase());
-
-  const progress = useGetUserProgressByLanguage(users?.data?.find(x => x.id != null)?.id, selectedLevel);
-
-  console.log({ progress: progress.data });
+  const progress = useGetUserProgressByLanguage(selectedLevel);
 
   // Transform cefrLevels data to match the component's expected format
   const learningPaths = useMemo(() => {
     const paths: Record<string, any[]> = {};
+    const currentLesson = progress.data ? progress.data.lesson : 0;
 
     Object.entries(cefrLevels).forEach(([level, levelData]) => {
       paths[level] = Object.entries(levelData.lessons).map(([lessonId, lessonData], index) => {
         // Determine lesson status based on index (for demo purposes)
         // You can replace this with actual user progress data
         let status = "locked";
-        if (index < 2) status = "completed";
-        else if (index === 2) status = "current";
+        if (index < currentLesson) status = "completed";
+        else if (index === currentLesson) status = "current";
 
         // Get first few exercise types as description
         const exerciseTypes = lessonData.exercises
@@ -58,7 +52,7 @@ const LearningRoad = () => {
     });
 
     return paths;
-  }, []);
+  }, [progress]);
 
   const handleLessonClick = (lesson: any) => {
     if (lesson.status === "locked") return;

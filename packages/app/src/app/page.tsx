@@ -1,21 +1,16 @@
 "use client"
 
-import { useState } from 'react';
-import { useRouter } from 'next/navigation';
+
 import { Card } from '@/components/ui/card';
-import { Coins, Users, Trophy, Wallet, Star, Shield, Zap } from 'lucide-react';
+import { Users, Trophy, Wallet, Star, Shield, Zap } from 'lucide-react';
 import { useAppKit } from '@reown/appkit/react';
+import { useAccount } from 'wagmi';
 
 export default function Home() {
-  const [isConnecting, setIsConnecting] = useState(false);
-  const router = useRouter();
-  const { open, close } = useAppKit();
+  const { open } = useAppKit();
+  const { isConnecting } = useAccount();
 
   const handleConnectWallet = async (walletType: string) => {
-    // setIsConnecting(true);
-    // await new Promise(resolve => setTimeout(resolve, 2000));
-    // setIsConnecting(false);
-    // router.push("/placement-test");
     open();
   };
 

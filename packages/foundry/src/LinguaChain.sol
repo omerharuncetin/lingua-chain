@@ -50,7 +50,7 @@ contract LinguaChain is SelfVerificationRoot, Ownable {
     // Example: Simple verification check
     require(certificateAddress != address(0), 'Incorrect certificate address!');
     require(bytes(output.nationality).length > 0, 'Nationality required!');
-    //require(compareStrings(output.name, name), 'User name is not correct!');
+    require(compareStrings(output.name, name), 'User name is not correct!');
 
     ISafeMintableNFT(certificateAddress).safeMint(userAddress);
   }

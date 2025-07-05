@@ -8,18 +8,15 @@ import ExerciseRenderer from "@/components/lesson/ExerciseRenderer";
 import { cefrLevels } from "@/data/lessonData";
 import { useParams, useRouter } from "next/navigation";
 import { useCreateOrUpdateUserProgress } from "@/app/hooks/useUserProgressHooks";
-import { useGetUsers } from "@/app/hooks/useUserHooks";
-import { useAppKitAccount } from "@reown/appkit/react";
+import { useAwardBadge } from "@/app/hooks/useBadgeHooks";
+import { CEFRLevel, getBadgeAddressByLevel } from "@/lib/utils";
 
 const Lesson = () => {
     const navigate = useRouter();
     const params = useParams();
 
-    const account = useAppKitAccount();
-
-    const users = useGetUsers(account.address);
-
     const progressMutation = useCreateOrUpdateUserProgress();
+    const badgeMutation = useAwardBadge();
 
     const level = params?.level as string;
     const lessonId = params?.lessonId as string;
@@ -89,6 +86,13 @@ const Lesson = () => {
 
     const handleBack = () => navigate.push("/learning-path");
     const handleContinueLearning = async () => {
+        const percentage = Math.round((score / exercises.length) * 100);
+
+        if (percentage < 75) {
+            navigate.push("/learning-path");
+            return;
+        };
+
         await updateUserProgress()
         // Navigate to next lesson
         const currentLessonNum = parseInt(lessonId as string);
@@ -105,24 +109,26 @@ const Lesson = () => {
             }
         }
     };
-    const handleBackToDashboard = async () => {
-        await updateUserProgress()
-        navigate.push("/dashboard");
-    }
-
-    console.log({ users: users.data });
 
     const updateUserProgress = async () => {
-        if (users.data && users.data.length > 0) {
-            const userId = users.data[0].id;
-            await progressMutation.mutateAsync({
-                payload: {
-                    language: level,
-                    lesson: parseInt(lessonId)
-                },
-                userId
-            })
+        const percentage = Math.round((score / exercises.length) * 100);
 
+        if (percentage < 75) return;
+
+        await progressMutation.mutateAsync({
+            payload: {
+                language: level,
+                lesson: parseInt(lessonId)
+            },
+        })
+
+        if (parseInt(lessonId) === 10) {
+            await badgeMutation.mutateAsync({
+                payload: {
+                    languageLevel: level,
+                    badgeAddress: getBadgeAddressByLevel(level as CEFRLevel)
+                }
+            })
         }
     }
 
@@ -132,7 +138,6 @@ const Lesson = () => {
                 score={score}
                 totalExercises={exercises.length}
                 onContinueLearning={handleContinueLearning}
-                onBackToDashboard={handleBackToDashboard}
             />
         );
     }

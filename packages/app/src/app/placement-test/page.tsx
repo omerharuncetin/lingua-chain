@@ -7,6 +7,7 @@ import { Card } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
 import { CheckCircle, XCircle, Trophy } from "lucide-react";
 import { useRouter } from "next/navigation";
+import { useCreateOrUpdateUserProgress } from "../hooks/useUserProgressHooks";
 
 
 const questions = [
@@ -125,6 +126,8 @@ const PlacementTest = () => {
     const [isComplete, setIsComplete] = useState(false);
     const router = useRouter();
 
+    const progressMutation = useCreateOrUpdateUserProgress();
+
 
     const handleAnswerSelect = (answerIndex: number) => {
         if (showFeedback) return;
@@ -150,6 +153,25 @@ const PlacementTest = () => {
         }, 1500);
     };
 
+    const updateUserProgress = async () => {
+        const level = getLevelPlain();
+
+        await progressMutation.mutateAsync({
+            payload: {
+                language: level,
+                lesson: 0
+            },
+        })
+    }
+
+    const getLevelPlain = () => {
+        const percentage = (score / questions.length) * 100;
+        if (percentage >= 80) return "B2";
+        if (percentage >= 60) return "B1";
+        if (percentage >= 40) return "A2";
+        return "A1";
+    };
+
     const getLevel = () => {
         const percentage = (score / questions.length) * 100;
         if (percentage >= 80) return "B2 Upper-Intermediate";
@@ -158,7 +180,8 @@ const PlacementTest = () => {
         return "A1 Beginner";
     };
 
-    const handleContinue = () => {
+    const handleContinue = async () => {
+        await updateUserProgress();
         router.push("/learning-path");
     };
 
