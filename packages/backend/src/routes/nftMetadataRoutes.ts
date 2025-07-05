@@ -41,6 +41,20 @@ const getStaticNftMetadata = (level: string, type: 'Badge' | 'Certificate', toke
   return metadata
 }
 
+// Helper to convert slug to Title Case Name (simple version)
+// e.g., "polyglot-panda" -> "Polyglot Panda"
+// e.g., "lingobot" -> "LingoBot"
+const slugToAvatarName = (slug: string): string => {
+  if (slug === 'lingobot') return 'LingoBot'; // Handle specific case for correct capitalization
+  return slug
+    .split('-')
+    .map(word => word.charAt(0).toUpperCase() + word.slice(1))
+    .join(' ');
+};
+
+const AVATAR_SLUGS = ["lingobot", "polyglot-panda", "grammar-goblin", "syntax-seraph", "verb-viper"];
+
+
 // --- Badge NFT Metadata Endpoints ---
 // GET /api/nft/badges/<level>/:tokenId
 LANGUAGE_LEVELS.forEach((level) => {
@@ -77,4 +91,63 @@ LANGUAGE_LEVELS.forEach((level) => {
   })
 })
 
-export default router
+// --- Avatar NFT Metadata Endpoints ---
+// GET /api/nft/avatars/<avatar_slug>/:tokenId
+AVATAR_SLUGS.forEach(slug => {
+  router.get(`/avatars/${slug}/:tokenId`, async (req: Request, res: Response) => {
+    const { tokenId } = req.params;
+    const avatarName = slugToAvatarName(slug);
+    const apiBaseUrl = process.env.API_BASE_URL || 'http://localhost:3001';
+
+    try {
+      const avatar = await prisma.avatar.findUnique({
+        where: { name: avatarName },
+      });
+
+      if (!avatar) {
+        return res.status(404).json({ error: `Avatar with name ${avatarName} (slug: ${slug}) not found in database.` });
+      }
+
+      // Construct metadata for the avatar
+      const metadata = {
+        name: avatar.name,
+        description: avatar.description || `A unique ${avatar.name} avatar. Token ID: ${tokenId}.`,
+        image: avatar.imageUrl ? `${apiBaseUrl}${avatar.imageUrl}` : `${apiBaseUrl}/images/nfts/avatars/default.png`, // Ensure imageUrl starts with a / if it's a path
+        // external_url: `${apiBaseUrl}/marketplace/avatar/${slug}`, // Optional
+        attributes: [
+          {
+            trait_type: "Type",
+            value: "Avatar",
+          },
+          {
+            trait_type: "Name",
+            value: avatar.name,
+          },
+          {
+            trait_type: "Lessons",
+            value: avatar.lessons,
+          },
+          {
+            trait_type: "Price", // Price might not always be relevant for NFT metadata directly unless it's for display
+            value: avatar.price,
+          },
+          {
+            trait_type: "Token ID",
+            value: tokenId,
+          }
+          // Add other avatar-specific attributes from the `avatar` object if needed
+        ],
+      };
+
+      console.log(`Serving metadata for Avatar: ${avatarName} (Slug: ${slug}), TokenID: ${tokenId}`);
+      res.json(metadata);
+
+    } catch (error) {
+      console.error(`Error fetching avatar ${avatarName} for metadata:`, error);
+      res.status(500).json({ error: `Failed to retrieve metadata for avatar ${avatarName}` });
+    }
+  });
+});
+
+
+export default router;
