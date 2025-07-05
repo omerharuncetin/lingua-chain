@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MIT
-pragma solidity 0.8.30;
+pragma solidity 0.8.28;
 
 import {LinguaA1Certificate} from '../src/certificates/A1Certificate.sol';
 import {LinguaA2Certificate} from '../src/certificates/A2Certificate.sol';
