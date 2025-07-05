@@ -54,10 +54,11 @@ model LeaderboardEntry {
 // Avatar table (NFTs for marketplace)
 model Avatar {
   id          String @id @default(cuid())
-  name        String @unique // e.g., "Avatar1", "Avatar2"
-  description String?
+  name        String @unique // e.g., "LingoBot", "Polyglot Panda"
+  description String? // Can be used for the "theme"
   price       Float     // Price in USDC
-  imageUrl    String?   // URL to the avatar image
+  imageUrl    String?   // URL to the avatar image e.g., /images/nfts/avatars/lingobot.png
+  lessons     Int       // Custom attribute: number of lessons this avatar might grant or relate to
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
 
