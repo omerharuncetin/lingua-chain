@@ -8,13 +8,24 @@ import {Ownable} from '@openzeppelin/contracts/access/Ownable.sol';
 contract PolyglotPanda is ERC721, Ownable {
   uint256 private _nextTokenId;
 
-  constructor(address initialOwner) ERC721('Polyglot Panda', 'Polyglot Panda') Ownable(initialOwner) {}
+  address marketplaceContract;
 
-  function _baseURI() internal pure override returns (string memory) {
-    return 'https://hackathon.omerharuncetin.com/api/nft/polyglot-panda/';
+  modifier ownerOrMarketPlaceContract() {
+    require(_msgSender() == owner() || _msgSender() == marketplaceContract, 'Authorized!');
+    _;
   }
 
-  function safeMint(address to) public onlyOwner returns (uint256) {
+  function setMarketplaceContract(address marketplaceContract_) external onlyOwner {
+    marketplaceContract = marketplaceContract_;
+  }
+
+  constructor() ERC721('Polyglot Panda', 'Polyglot Panda') Ownable(msg.sender) {}
+
+  function _baseURI() internal pure override returns (string memory) {
+    return 'https://hackathon.omerharuncetin.com/api/nft/avatars/polyglot-panda/';
+  }
+
+  function safeMint(address to) public ownerOrMarketPlaceContract returns (uint256) {
     uint256 tokenId = _nextTokenId++;
     _safeMint(to, tokenId);
     return tokenId;

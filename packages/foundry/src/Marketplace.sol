@@ -3,11 +3,11 @@ pragma solidity ^0.8.28;
 
 import '@openzeppelin/contracts/token/ERC20/IERC20.sol';
 
-interface IMintableNFT {
-  function mint(address to) external;
+interface ISafeMintableNFT {
+  function safeMint(address to) external;
 }
 
-contract MultiNFTMarketplace {
+contract LinguaAvatarMarketplace {
   IERC20 public immutable usdc;
   address public owner;
 
@@ -79,7 +79,7 @@ contract MultiNFTMarketplace {
     require(usdc.transferFrom(msg.sender, owner, price), 'USDC transfer failed');
 
     // Mint NFT to buyer
-    IMintableNFT(nftAddress).mint(msg.sender);
+    ISafeMintableNFT(nftAddress).safeMint(msg.sender);
 
     emit Purchased(msg.sender, index, price);
   }

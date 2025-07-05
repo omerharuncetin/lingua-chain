@@ -2,14 +2,14 @@
 pragma solidity 0.8.28;
 
 import {Script} from '../lib/forge-std/src/Script.sol';
-import {LinguaChain} from '../src/LinguaChain.sol';
+import {LinguaAvatarMarketplace} from '../src/Marketplace.sol';
 
-contract LinguaChainScript is Script {
+contract MarketplaceScript is Script {
   function run() public {
     vm.createSelectFork('celo-alfajores');
     vm.startBroadcast();
 
-    new LinguaChain(0x68c931C9a534D37aa78094877F46fE46a49F1A51, 5);
+    new LinguaAvatarMarketplace(0x2F25deB3848C207fc8E0c34035B3Ba7fC157602B); // usdc address
 
     vm.stopBroadcast();
   }

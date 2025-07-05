@@ -7,14 +7,24 @@ import {Ownable} from '@openzeppelin/contracts/access/Ownable.sol';
 
 contract GrammarGoblin is ERC721, Ownable {
   uint256 private _nextTokenId;
+  address marketplaceContract;
 
-  constructor(address initialOwner) ERC721('Grammar Goblin', 'Grammar Goblin') Ownable(initialOwner) {}
-
-  function _baseURI() internal pure override returns (string memory) {
-    return 'https://hackathon.omerharuncetin.com/api/nft/grammar-goblin/';
+  modifier ownerOrMarketPlaceContract() {
+    require(_msgSender() == owner() || _msgSender() == marketplaceContract, 'Authorized!');
+    _;
   }
 
-  function safeMint(address to) public onlyOwner returns (uint256) {
+  function setMarketplaceContract(address marketplaceContract_) external onlyOwner {
+    marketplaceContract = marketplaceContract_;
+  }
+
+  constructor() ERC721('Grammar Goblin', 'Grammar Goblin') Ownable(msg.sender) {}
+
+  function _baseURI() internal pure override returns (string memory) {
+    return 'https://hackathon.omerharuncetin.com/api/nft/avatars/grammar-goblin/';
+  }
+
+  function safeMint(address to) public ownerOrMarketPlaceContract returns (uint256) {
     uint256 tokenId = _nextTokenId++;
     _safeMint(to, tokenId);
     return tokenId;
