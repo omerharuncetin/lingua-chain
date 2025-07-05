@@ -30,15 +30,15 @@ const apiClient = axios.create({
 });
 
 // GET /api/users/:userId/progress - Get all progress for a user
-export const useGetUserProgressAll = (userId?: string) => {
+export const useGetUserProgressAll = () => {
   const { address, isConnected } = useAccount();
-  const enabled = isConnected && !!userId;
+  const enabled = isConnected && !!address;
 
   return useQuery<UserProgress[], Error>({
-    queryKey: [USER_PROGRESS_QUERY_KEY_PREFIX, userId],
+    queryKey: [USER_PROGRESS_QUERY_KEY_PREFIX, address],
     queryFn: async () => {
-      if (!userId) throw new Error('User ID is required');
-      const { data } = await apiClient.get(`/api/users/${userId}/progress`);
+      if (!address) throw new Error('User ID is required');
+      const { data } = await apiClient.get(`/api/users/${address}/progress`);
       return data;
     },
     enabled: enabled,
@@ -46,15 +46,15 @@ export const useGetUserProgressAll = (userId?: string) => {
 };
 
 // GET /api/users/:userId/progress/:language - Get specific language progress for a user
-export const useGetUserProgressByLanguage = (userId?: string, language?: string) => {
+export const useGetUserProgressByLanguage = (language?: string) => {
   const { address, isConnected } = useAccount();
-  const enabled = isConnected && !!userId && !!language;
+  const enabled = isConnected && !!address && !!language;
 
   return useQuery<UserProgress, Error>({
-    queryKey: [USER_PROGRESS_QUERY_KEY_PREFIX, userId, language],
+    queryKey: [USER_PROGRESS_QUERY_KEY_PREFIX, address, language],
     queryFn: async () => {
-      if (!userId || !language) throw new Error('User ID and language are required');
-      const { data } = await apiClient.get(`/api/users/${userId}/progress/${language}`);
+      if (!address || !language) throw new Error('User ID and language are required');
+      const { data } = await apiClient.get(`/api/users/${address}/progress/${language}`);
       return data;
     },
     enabled: enabled,
@@ -66,20 +66,20 @@ export const useCreateOrUpdateUserProgress = () => {
   const queryClient = useQueryClient();
   const { address, isConnected } = useAccount();
 
-  return useMutation<UserProgress, Error, { userId: string; payload: CreateOrUpdateUserProgressPayload }>({
-    mutationFn: async ({ userId, payload }) => {
+  return useMutation<UserProgress, Error, { payload: CreateOrUpdateUserProgressPayload }>({
+    mutationFn: async ({ payload }) => {
       if (!isConnected || !address) {
         throw new Error('User not connected');
       }
-      const { data } = await apiClient.post(`/api/users/${userId}/progress`, payload);
+      const { data } = await apiClient.post(`/api/users/${address}/progress`, payload);
       return data;
     },
-    onSuccess: (updatedProgress, variables) => {
-      queryClient.invalidateQueries({ queryKey: [USER_PROGRESS_QUERY_KEY_PREFIX, variables.userId] });
-      queryClient.invalidateQueries({ queryKey: [USER_PROGRESS_QUERY_KEY_PREFIX, variables.userId, updatedProgress.language] });
-      queryClient.setQueryData([USER_PROGRESS_QUERY_KEY_PREFIX, variables.userId, updatedProgress.language], updatedProgress);
+    onSuccess: (updatedProgress) => {
+      queryClient.invalidateQueries({ queryKey: [USER_PROGRESS_QUERY_KEY_PREFIX, address] });
+      queryClient.invalidateQueries({ queryKey: [USER_PROGRESS_QUERY_KEY_PREFIX, address, updatedProgress.language] });
+      queryClient.setQueryData([USER_PROGRESS_QUERY_KEY_PREFIX, address, updatedProgress.language], updatedProgress);
       // If user details query embeds progress, invalidate that too
-      queryClient.invalidateQueries({ queryKey: ['users', variables.userId] });
+      queryClient.invalidateQueries({ queryKey: ['users', address] });
     },
   });
 };
@@ -89,19 +89,19 @@ export const useUpdateUserProgress = () => {
   const queryClient = useQueryClient();
   const { address, isConnected } = useAccount();
 
-  return useMutation<UserProgress, Error, { userId: string; language: string; payload: UpdateUserProgressPayload }>({
-    mutationFn: async ({ userId, language, payload }) => {
+  return useMutation<UserProgress, Error, { language: string; payload: UpdateUserProgressPayload }>({
+    mutationFn: async ({ language, payload }) => {
       if (!isConnected || !address) {
         throw new Error('User not connected');
       }
-      const { data } = await apiClient.put(`/api/users/${userId}/progress/${language}`, payload);
+      const { data } = await apiClient.put(`/api/users/${address}/progress/${language}`, payload);
       return data;
     },
     onSuccess: (updatedProgress, variables) => {
-      queryClient.invalidateQueries({ queryKey: [USER_PROGRESS_QUERY_KEY_PREFIX, variables.userId] });
-      queryClient.invalidateQueries({ queryKey: [USER_PROGRESS_QUERY_KEY_PREFIX, variables.userId, variables.language] });
-      queryClient.setQueryData([USER_PROGRESS_QUERY_KEY_PREFIX, variables.userId, variables.language], updatedProgress);
-      queryClient.invalidateQueries({ queryKey: ['users', variables.userId] });
+      queryClient.invalidateQueries({ queryKey: [USER_PROGRESS_QUERY_KEY_PREFIX, address] });
+      queryClient.invalidateQueries({ queryKey: [USER_PROGRESS_QUERY_KEY_PREFIX, address, variables.language] });
+      queryClient.setQueryData([USER_PROGRESS_QUERY_KEY_PREFIX, address, variables.language], updatedProgress);
+      queryClient.invalidateQueries({ queryKey: ['users', address] });
     },
   });
 };
@@ -111,17 +111,17 @@ export const useDeleteUserProgress = () => {
   const queryClient = useQueryClient();
   const { address, isConnected } = useAccount();
 
-  return useMutation<void, Error, { userId: string; language: string }>({
-    mutationFn: async ({ userId, language }) => {
+  return useMutation<void, Error, { language: string }>({
+    mutationFn: async ({ language }) => {
       if (!isConnected || !address) {
         throw new Error('User not connected');
       }
-      await apiClient.delete(`/api/users/${userId}/progress/${language}`);
+      await apiClient.delete(`/api/users/${address}/progress/${language}`);
     },
     onSuccess: (data, variables) => {
-      queryClient.invalidateQueries({ queryKey: [USER_PROGRESS_QUERY_KEY_PREFIX, variables.userId] });
-      queryClient.invalidateQueries({ queryKey: [USER_PROGRESS_QUERY_KEY_PREFIX, variables.userId, variables.language] });
-      queryClient.invalidateQueries({ queryKey: ['users', variables.userId] });
+      queryClient.invalidateQueries({ queryKey: [USER_PROGRESS_QUERY_KEY_PREFIX, address] });
+      queryClient.invalidateQueries({ queryKey: [USER_PROGRESS_QUERY_KEY_PREFIX, address, variables.language] });
+      queryClient.invalidateQueries({ queryKey: ['users', address] });
     },
   });
 };

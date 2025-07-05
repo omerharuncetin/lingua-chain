@@ -37,22 +37,22 @@ const apiClient = axios.create({
 // --- User-specific Certificate Hooks ---
 
 // GET /api/users/:userId/certificates - Get all certificates for a user
-export const useGetUserCertificates = (userId?: string, languageLevel?: string) => {
+export const useGetUserCertificates = (languageLevel?: string) => {
   const { address, isConnected } = useAccount();
   // Enable if connected and userId is provided.
   // Could add logic for 'me' to map to connected user's ID if needed.
-  const enabled = isConnected && !!userId;
+  const enabled = isConnected && !!address;
 
   return useQuery<Certificate[], Error>({
-    queryKey: [CERTIFICATE_QUERY_KEY_PREFIX, 'user', userId, { languageLevel }],
+    queryKey: [CERTIFICATE_QUERY_KEY_PREFIX, 'user', address, { languageLevel }],
     queryFn: async () => {
-      if (!userId) throw new Error('User ID is required');
-      const { data } = await apiClient.get(`/api/users/${userId}/certificates`, {
+      if (!address) throw new Error('User ID is required');
+      const { data } = await apiClient.get(`/api/users/${address}/certificates`, {
         params: { languageLevel },
       });
       return data;
     },
-    enabled: !!userId,
+    enabled
   });
 };
 
@@ -61,17 +61,17 @@ export const useAwardCertificate = () => {
   const queryClient = useQueryClient();
   const { address, isConnected } = useAccount();
 
-  return useMutation<Certificate, Error, { userId: string; payload: AwardCertificatePayload }>({
-    mutationFn: async ({ userId, payload }) => {
+  return useMutation<Certificate, Error, { payload: AwardCertificatePayload }>({
+    mutationFn: async ({ payload }) => {
       if (!isConnected || !address) {
         throw new Error('User not connected');
       }
-      const { data } = await apiClient.post(`/api/users/${userId}/certificates`, payload);
+      const { data } = await apiClient.post(`/api/users/${address}/certificates`, payload);
       return data;
     },
     onSuccess: (awardedCertificate, variables) => {
-      queryClient.invalidateQueries({ queryKey: [CERTIFICATE_QUERY_KEY_PREFIX, 'user', variables.userId] });
-      queryClient.invalidateQueries({ queryKey: ['users', variables.userId] }); // If user object embeds certificates
+      queryClient.invalidateQueries({ queryKey: [CERTIFICATE_QUERY_KEY_PREFIX, 'user', address] });
+      queryClient.invalidateQueries({ queryKey: ['users', address] }); // If user object embeds certificates
     },
   });
 };
@@ -81,16 +81,16 @@ export const useDeleteUserCertificate = () => {
   const queryClient = useQueryClient();
   const { address, isConnected } = useAccount();
 
-  return useMutation<void, Error, { userId: string; certificateId: string }>({
-    mutationFn: async ({ userId, certificateId }) => {
+  return useMutation<void, Error, { certificateId: string }>({
+    mutationFn: async ({ certificateId }) => {
       if (!isConnected || !address) {
         throw new Error('User not connected');
       }
-      await apiClient.delete(`/api/users/${userId}/certificates/${certificateId}`);
+      await apiClient.delete(`/api/users/${address}/certificates/${certificateId}`);
     },
     onSuccess: (data, variables) => {
-      queryClient.invalidateQueries({ queryKey: [CERTIFICATE_QUERY_KEY_PREFIX, 'user', variables.userId] });
-      queryClient.invalidateQueries({ queryKey: ['users', variables.userId] });
+      queryClient.invalidateQueries({ queryKey: [CERTIFICATE_QUERY_KEY_PREFIX, 'user', address] });
+      queryClient.invalidateQueries({ queryKey: ['users', address] });
     },
   });
 };

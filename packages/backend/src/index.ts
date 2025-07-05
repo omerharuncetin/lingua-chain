@@ -1,4 +1,6 @@
 import express, { Request, Response, NextFunction } from 'express';
+import 'dotenv/config'
+import cors from 'cors';
 
 // Import routers
 import userRoutes from './routes/userRoutes';
@@ -18,6 +20,7 @@ const port = process.env.PORT || 3001;
 
 // Middleware to parse JSON bodies
 app.use(express.json());
+app.use(cors())
 
 // Middleware to serve static files from the 'public' directory
 // This will allow access to files like http://localhost:3001/images/nfts/badges/a1.png

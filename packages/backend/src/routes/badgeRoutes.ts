@@ -32,7 +32,7 @@ router.post('/', async (req: Request, res: Response) => {
   }
 
   try {
-    const userExists = await prisma.user.findUnique({ where: { id: userId } })
+    const userExists = await prisma.user.findUnique({ where: { walletAddress: userId } })
     if (!userExists) {
       return res.status(404).json({ error: 'User not found.' })
     }
@@ -40,7 +40,7 @@ router.post('/', async (req: Request, res: Response) => {
     // Check if user already has this specific badge (optional, based on if they can have multiple or only one per level)
     // The schema has @@unique([userId, languageLevel]) for Badge model.
     const existingBadge = await prisma.badge.findUnique({
-      where: { userId_languageLevel: { userId, languageLevel } },
+      where: { userId_languageLevel: { userId: userExists.id, languageLevel } },
     })
     if (existingBadge) {
       return res.status(409).json({ error: `User already has a badge for level ${languageLevel}.` })
@@ -48,7 +48,7 @@ router.post('/', async (req: Request, res: Response) => {
 
     const progress = await prisma.userProgress.findFirst({
       where: {
-        userId: userId,
+        userId: userExists.id,
         language: languageLevel,
       },
     })
@@ -87,14 +87,14 @@ router.get('/', async (req: Request, res: Response) => {
   }
 
   try {
-    const userExists = await prisma.user.findUnique({ where: { id: userId } })
+    const userExists = await prisma.user.findUnique({ where: { walletAddress: userId } })
     if (!userExists) {
       return res.status(404).json({ error: 'User not found.' })
     }
 
     const badges = await prisma.badge.findMany({
       where: {
-        userId,
+        userId: userExists.id,
         languageLevel: languageLevel ? String(languageLevel).toUpperCase() : undefined,
       },
       orderBy: {
@@ -118,10 +118,11 @@ router.delete('/:badgeId', async (req: Request, res: Response) => {
 
   try {
     const badge = await prisma.badge.findUnique({ where: { id: badgeId } })
-    if (!badge) {
+    const user = await prisma.user.findUnique({ where: { walletAddress: userId } })
+    if (!badge || !user) {
       return res.status(404).json({ error: 'Badge not found.' })
     }
-    if (badge.userId !== userId) {
+    if (badge.userId !== user.id) {
       return res.status(403).json({ error: 'Forbidden: This badge does not belong to the specified user.' })
     }
 

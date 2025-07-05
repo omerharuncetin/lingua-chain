@@ -12,6 +12,17 @@ router.post('/', async (req: Request, res: Response) => {
   }
 
   try {
+    const currentUser = await prisma.user.findFirst({
+      where: {
+        walletAddress: walletAddress
+      }
+    })
+
+    if(currentUser) {
+      res.status(201).json(currentUser);
+      return;
+    }
+
     const newUser = await prisma.user.create({
       data: {
         walletAddress,

@@ -35,17 +35,17 @@ const apiClient = axios.create({
 });
 
 // GET /api/users/:userId/avatars - Get all avatars owned by a user
-export const useGetUserAvatars = (userId?: string) => {
+export const useGetUserAvatars = () => {
   const { address, isConnected } = useAccount();
   // Enable if connected and userId is provided.
   // Could add logic for 'me' to map to connected user's ID.
-  const enabled = isConnected && !!userId;
+  const enabled = isConnected && !!address;
 
   return useQuery<UserAvatar[], Error>({
-    queryKey: [USER_AVATAR_QUERY_KEY_PREFIX, userId],
+    queryKey: [USER_AVATAR_QUERY_KEY_PREFIX, address],
     queryFn: async () => {
-      if (!userId) throw new Error('User ID is required');
-      const { data } = await apiClient.get(`/api/users/${userId}/avatars`);
+      if (!address) throw new Error('User ID is required');
+      const { data } = await apiClient.get(`/api/users/${address}/avatars`);
       return data;
     },
     enabled: enabled,
@@ -57,20 +57,20 @@ export const useRecordUserAvatar = () => {
   const queryClient = useQueryClient();
   const { address, isConnected } = useAccount();
 
-  return useMutation<UserAvatar, Error, { userId: string; payload: RecordUserAvatarPayload }>({
-    mutationFn: async ({ userId, payload }) => {
+  return useMutation<UserAvatar, Error, { payload: RecordUserAvatarPayload }>({
+    mutationFn: async ({ payload }) => {
       if (!isConnected || !address) {
         throw new Error('User not connected');
       }
       // Optional: Check if the connected user matches userId if that's a requirement
-      const { data } = await apiClient.post(`/api/users/${userId}/avatars`, payload);
+      const { data } = await apiClient.post(`/api/users/${address}/avatars`, payload);
       return data;
     },
     onSuccess: (newUserAvatar, variables) => {
       // Invalidate the list of user's avatars
-      queryClient.invalidateQueries({ queryKey: [USER_AVATAR_QUERY_KEY_PREFIX, variables.userId] });
+      queryClient.invalidateQueries({ queryKey: [USER_AVATAR_QUERY_KEY_PREFIX, address] });
       // If user details query embeds their avatars, invalidate that too
-      queryClient.invalidateQueries({ queryKey: ['users', variables.userId] });
+      queryClient.invalidateQueries({ queryKey: ['users', address] });
     },
   });
 };
@@ -80,16 +80,16 @@ export const useDeleteUserAvatar = () => {
   const queryClient = useQueryClient();
   const { address, isConnected } = useAccount();
 
-  return useMutation<void, Error, { userId: string; userAvatarId: string }>({
-    mutationFn: async ({ userId, userAvatarId }) => {
+  return useMutation<void, Error, { userAvatarId: string }>({
+    mutationFn: async ({ userAvatarId }) => {
       if (!isConnected || !address) {
         throw new Error('User not connected');
       }
-      await apiClient.delete(`/api/users/${userId}/avatars/${userAvatarId}`);
+      await apiClient.delete(`/api/users/${address}/avatars/${userAvatarId}`);
     },
     onSuccess: (data, variables) => {
-      queryClient.invalidateQueries({ queryKey: [USER_AVATAR_QUERY_KEY_PREFIX, variables.userId] });
-      queryClient.invalidateQueries({ queryKey: ['users', variables.userId] });
+      queryClient.invalidateQueries({ queryKey: [USER_AVATAR_QUERY_KEY_PREFIX, address] });
+      queryClient.invalidateQueries({ queryKey: ['users', address] });
     },
   });
 };

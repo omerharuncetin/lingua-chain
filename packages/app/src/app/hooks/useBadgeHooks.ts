@@ -36,24 +36,23 @@ const apiClient = axios.create({
 // --- User-specific Badge Hooks ---
 
 // GET /api/users/:userId/badges - Get all badges for a user
-export const useGetUserBadges = (userId?: string, languageLevel?: string) => {
+export const useGetUserBadges = (languageLevel?: string) => {
   const { address, isConnected } = useAccount();
-  const enabled = isConnected && !!userId && (userId === 'me' || !!address); // 'me' could be a placeholder for connected user
+  const enabled = isConnected && !!address; // 'me' could be a placeholder for connected user
 
   return useQuery<Badge[], Error>({
-    queryKey: [BADGE_QUERY_KEY_PREFIX, 'user', userId, { languageLevel }],
+    queryKey: [BADGE_QUERY_KEY_PREFIX, 'user', address, { languageLevel }],
     queryFn: async () => {
-      if (!userId) throw new Error('User ID is required');
+      if (!address) throw new Error('User ID is required');
       // Replace 'me' with actual connected user's ID if that pattern is used.
       // For now, assuming userId is always specific or handled by backend if it's a general 'me'.
-      const actualUserId = userId; // Potentially map 'me' to a real ID if needed client-side
 
-      const { data } = await apiClient.get(`/api/users/${actualUserId}/badges`, {
+      const { data } = await apiClient.get(`/api/users/${address}/badges`, {
         params: { languageLevel },
       });
       return data;
     },
-    enabled: !!userId, // Only fetch if userId is provided
+    enabled, // Only fetch if userId is provided
   });
 };
 
@@ -62,19 +61,19 @@ export const useAwardBadge = () => {
   const queryClient = useQueryClient();
   const { address, isConnected } = useAccount();
 
-  return useMutation<Badge, Error, { userId: string; payload: AwardBadgePayload }>({
-    mutationFn: async ({ userId, payload }) => {
+  return useMutation<Badge, Error, {payload: AwardBadgePayload }>({
+    mutationFn: async ({ payload }) => {
       if (!isConnected || !address) {
         throw new Error('User not connected');
       }
       // Optional: Add check if connected user is the one receiving the badge, if applicable
-      const { data } = await apiClient.post(`/api/users/${userId}/badges`, payload);
+      const { data } = await apiClient.post(`/api/users/${address}/badges`, payload);
       return data;
     },
     onSuccess: (awardedBadge, variables) => {
-      queryClient.invalidateQueries({ queryKey: [BADGE_QUERY_KEY_PREFIX, 'user', variables.userId] });
+      queryClient.invalidateQueries({ queryKey: [BADGE_QUERY_KEY_PREFIX, 'user', address] });
       // Potentially invalidate user query if badges are nested there
-      queryClient.invalidateQueries({ queryKey: ['users', variables.userId] });
+      queryClient.invalidateQueries({ queryKey: ['users', address] });
     },
   });
 };
@@ -84,16 +83,16 @@ export const useDeleteUserBadge = () => {
   const queryClient = useQueryClient();
   const { address, isConnected } = useAccount();
 
-  return useMutation<void, Error, { userId: string; badgeId: string }>({
-    mutationFn: async ({ userId, badgeId }) => {
+  return useMutation<void, Error, { badgeId: string }>({
+    mutationFn: async ({ badgeId }) => {
       if (!isConnected || !address) {
         throw new Error('User not connected');
       }
-      await apiClient.delete(`/api/users/${userId}/badges/${badgeId}`);
+      await apiClient.delete(`/api/users/${address}/badges/${badgeId}`);
     },
     onSuccess: (data, variables) => {
-      queryClient.invalidateQueries({ queryKey: [BADGE_QUERY_KEY_PREFIX, 'user', variables.userId] });
-      queryClient.invalidateQueries({ queryKey: ['users', variables.userId] });
+      queryClient.invalidateQueries({ queryKey: [BADGE_QUERY_KEY_PREFIX, 'user', address] });
+      queryClient.invalidateQueries({ queryKey: ['users', address] });
     },
   });
 };

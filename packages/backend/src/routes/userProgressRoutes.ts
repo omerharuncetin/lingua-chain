@@ -14,7 +14,7 @@ router.post('/', async (req: Request, res: Response) => {
   }
 
   try {
-    const userExists = await prisma.user.findUnique({ where: { id: userId } });
+    const userExists = await prisma.user.findUnique({ where: { walletAddress: userId } });
     if (!userExists) {
       return res.status(404).json({ error: 'User not found' });
     }
@@ -22,13 +22,13 @@ router.post('/', async (req: Request, res: Response) => {
     const userProgress = await prisma.userProgress.upsert({
       where: {
         userId_language: {
-          userId,
+          userId: userExists.id,
           language,
         },
       },
       update: { lesson },
       create: {
-        userId,
+        userId: userExists.id,
         language,
         lesson,
       },
@@ -44,13 +44,13 @@ router.post('/', async (req: Request, res: Response) => {
 router.get('/', async (req: Request, res: Response) => {
   const { userId } = req.params;
   try {
-    const userExists = await prisma.user.findUnique({ where: { id: userId } });
+    const userExists = await prisma.user.findUnique({ where: { walletAddress: userId } });
     if (!userExists) {
       return res.status(404).json({ error: 'User not found' });
     }
 
     const progress = await prisma.userProgress.findMany({
-      where: { userId },
+      where: { userId: userExists.id },
     });
     res.json(progress);
   } catch (error) {
@@ -63,7 +63,7 @@ router.get('/', async (req: Request, res: Response) => {
 router.get('/:language', async (req: Request, res: Response) => {
   const { userId, language } = req.params;
   try {
-    const userExists = await prisma.user.findUnique({ where: { id: userId } });
+    const userExists = await prisma.user.findUnique({ where: { walletAddress: userId } });
     if (!userExists) {
       return res.status(404).json({ error: 'User not found' });
     }
@@ -71,7 +71,7 @@ router.get('/:language', async (req: Request, res: Response) => {
     const progressItem = await prisma.userProgress.findUnique({
       where: {
         userId_language: {
-          userId,
+          userId: userExists.id,
           language,
         },
       },
@@ -97,7 +97,7 @@ router.put('/:language', async (req: Request, res: Response) => {
   }
 
   try {
-    const userExists = await prisma.user.findUnique({ where: { id: userId } });
+    const userExists = await prisma.user.findUnique({ where: { walletAddress: userId } });
     if (!userExists) {
       return res.status(404).json({ error: 'User not found' });
     }
@@ -105,7 +105,7 @@ router.put('/:language', async (req: Request, res: Response) => {
     const updatedProgress = await prisma.userProgress.update({
       where: {
         userId_language: {
-          userId,
+          userId: userExists.id,
           language,
         },
       },
@@ -125,7 +125,7 @@ router.put('/:language', async (req: Request, res: Response) => {
 router.delete('/:language', async (req: Request, res: Response) => {
   const { userId, language } = req.params;
   try {
-    const userExists = await prisma.user.findUnique({ where: { id: userId } });
+    const userExists = await prisma.user.findUnique({ where: { walletAddress: userId } });
     if (!userExists) {
       return res.status(404).json({ error: 'User not found' });
     }
@@ -133,7 +133,7 @@ router.delete('/:language', async (req: Request, res: Response) => {
     await prisma.userProgress.delete({
       where: {
         userId_language: {
-          userId,
+          userId: userExists.id,
           language,
         },
       },

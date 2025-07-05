@@ -15,7 +15,7 @@ router.post('/', async (req: Request, res: Response) => {
 
   try {
     // Check if user exists
-    const userExists = await prisma.user.findUnique({ where: { id: userId } })
+    const userExists = await prisma.user.findUnique({ where: { walletAddress: userId } })
     if (!userExists) {
       return res.status(404).json({ error: 'User not found.' })
     }
@@ -28,7 +28,7 @@ router.post('/', async (req: Request, res: Response) => {
 
     // Check if user already owns this avatar (optional, based on requirements)
     const existingUserAvatar = await prisma.userAvatar.findUnique({
-      where: { userId_avatarId: { userId, avatarId } },
+      where: { userId_avatarId: { userId: userExists.id, avatarId } },
     })
 
     if (existingUserAvatar) {
@@ -37,7 +37,7 @@ router.post('/', async (req: Request, res: Response) => {
 
     const newUserAvatar = await prisma.userAvatar.create({
       data: {
-        userId,
+        userId: userExists.id,
         avatarId,
         // purchaseDate is defaulted by Prisma schema
       },
@@ -69,13 +69,13 @@ router.post('/', async (req: Request, res: Response) => {
 router.get('/', async (req: Request, res: Response) => {
   const { userId } = req.params
   try {
-    const userExists = await prisma.user.findUnique({ where: { id: userId } })
+    const userExists = await prisma.user.findUnique({ where: { walletAddress: userId } })
     if (!userExists) {
       return res.status(404).json({ error: 'User not found.' })
     }
 
     const userAvatars = await prisma.userAvatar.findMany({
-      where: { userId },
+      where: { userId: userExists.id },
       include: {
         avatar: true, // Include full avatar details
       },
@@ -108,11 +108,15 @@ router.delete('/:userAvatarId', async (req: Request, res: Response) => {
       where: { id: userAvatarId },
     })
 
-    if (!userAvatarEntry) {
+    const userEntry = await prisma.user.findUnique({
+      where: { walletAddress: userId },
+    })
+
+    if (!userAvatarEntry || !userEntry) {
       return res.status(404).json({ error: 'UserAvatar entry not found.' })
     }
 
-    if (userAvatarEntry.userId !== userId) {
+    if (userAvatarEntry.userId !== userEntry.walletAddress) {
       // This means the userAvatarId exists, but not for the user specified in the URL path.
       return res
         .status(403)

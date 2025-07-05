@@ -1,11 +1,11 @@
-import { Address, createPublicClient, createWalletClient, http } from 'viem'
-import { privateKeyToAccount } from 'viem/_types/accounts'
+import { Address, createPublicClient, createWalletClient, Hex, http } from 'viem'
+import { privateKeyToAccount } from 'viem/accounts'
 import { celoAlfajores } from 'viem/chains'
 
 // Configure the Public Client for Celo Alfajores Testnet
 // You can add a custom transport if you have a specific RPC provider URL,
 // otherwise, Viem will use the default public RPC for Celo Alfajores.
-const account = privateKeyToAccount(process.env.PRIVATE_KEY as Address)
+const account = privateKeyToAccount(process.env.PRIVATE_KEY as Hex)
 
 export const publicClient = createPublicClient({
   chain: celoAlfajores,

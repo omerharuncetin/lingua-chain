@@ -24,14 +24,14 @@ router.post('/', async (req: Request, res: Response) => {
   }
 
   try {
-    const userExists = await prisma.user.findUnique({ where: { id: userId } })
+    const userExists = await prisma.user.findUnique({ where: { walletAddress: userId } })
     if (!userExists) {
       return res.status(404).json({ error: 'User not found.' })
     }
 
     // Schema has @@unique([userId, languageLevel]) for Certificate model.
     const existingCertificate = await prisma.certificate.findUnique({
-      where: { userId_languageLevel: { userId, languageLevel } },
+      where: { userId_languageLevel: { userId: userExists.id, languageLevel } },
     })
     if (existingCertificate) {
       return res.status(409).json({ error: `User already has a certificate for level ${languageLevel}.` })
@@ -39,7 +39,7 @@ router.post('/', async (req: Request, res: Response) => {
 
     const newCertificate = await prisma.certificate.create({
       data: {
-        userId,
+        userId: userExists.id,
         languageLevel: languageLevel.toUpperCase(),
         certificateUrl,
         tokenId,
@@ -71,14 +71,14 @@ router.get('/', async (req: Request, res: Response) => {
   }
 
   try {
-    const userExists = await prisma.user.findUnique({ where: { id: userId } })
+    const userExists = await prisma.user.findUnique({ where: { walletAddress: userId } })
     if (!userExists) {
       return res.status(404).json({ error: 'User not found.' })
     }
 
     const certificates = await prisma.certificate.findMany({
       where: {
-        userId,
+        userId: userExists.id,
         languageLevel: languageLevel ? String(languageLevel).toUpperCase() : undefined,
       },
       orderBy: {
@@ -102,10 +102,11 @@ router.delete('/:certificateId', async (req: Request, res: Response) => {
 
   try {
     const certificate = await prisma.certificate.findUnique({ where: { id: certificateId } })
-    if (!certificate) {
+    const user = await prisma.user.findUnique({ where: { walletAddress: userId } })
+    if (!certificate || !user) {
       return res.status(404).json({ error: 'Certificate not found.' })
     }
-    if (certificate.userId !== userId) {
+    if (certificate.userId !== user.id) {
       return res.status(403).json({ error: 'Forbidden: This certificate does not belong to the specified user.' })
     }
 
