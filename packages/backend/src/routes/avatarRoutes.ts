@@ -1,41 +1,40 @@
-import express, { Request, Response } from 'express'
-import prisma from '../lib/prisma'
+import express, { Request, Response } from 'express';
+import prisma from '../lib/prisma';
 
-const router = express.Router()
+const router = express.Router();
 
 // GET /api/avatars - Get all available avatars
 router.get('/', async (req: Request, res: Response) => {
   try {
     const avatars = await prisma.avatar.findMany({
-      orderBy: {
-        // Optional: order by name or price, for example
+      orderBy: { // Optional: order by name or price, for example
         name: 'asc',
       },
-    })
-    res.json(avatars)
+    });
+    res.json(avatars);
   } catch (error) {
-    console.error('Failed to retrieve avatars:', error)
-    res.status(500).json({ error: 'Failed to retrieve avatars' })
+    console.error('Failed to retrieve avatars:', error);
+    res.status(500).json({ error: 'Failed to retrieve avatars' });
   }
-})
+});
 
 // GET /api/avatars/:id - Get a specific avatar by ID
 router.get('/:id', async (req: Request, res: Response) => {
-  const { id } = req.params
+  const { id } = req.params;
   try {
     const avatar = await prisma.avatar.findUnique({
       where: { id },
-    })
+    });
     if (avatar) {
-      res.json(avatar)
+      res.json(avatar);
     } else {
-      res.status(404).json({ error: 'Avatar not found' })
+      res.status(404).json({ error: 'Avatar not found' });
     }
   } catch (error) {
-    console.error(`Failed to retrieve avatar ${id}:`, error)
-    res.status(500).json({ error: 'Failed to retrieve avatar' })
+    console.error(`Failed to retrieve avatar ${id}:`, error);
+    res.status(500).json({ error: 'Failed to retrieve avatar' });
   }
-})
+});
 
 // Future considerations (Admin CRUD for Avatars):
 // POST /api/avatars - Create a new avatar (Admin only)
@@ -107,4 +106,4 @@ router.delete('/:id', async (req: Request, res: Response) => {
 });
 */
 
-export default router
+export default router;

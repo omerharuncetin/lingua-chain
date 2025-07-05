@@ -23,7 +23,27 @@ model User {
   avatars       UserAvatar[]
   certificates  Certificate[]
   badges        Badge[]
+  dailyLessons  DailyLessonRecord[] // User's daily lesson records
+
+  // Equipped Avatar
+  equippedAvatarId String?          @unique // @unique because a UserAvatar can only be equipped by one User.
+                                      // If UserAvatar could be shared and equipped by many, this wouldn't be unique.
+                                      // But UserAvatar is user-specific, so this implies a User has one equipped UserAvatar.
+  equippedAvatar   UserAvatar?      @relation("EquippedUserAvatar", fields: [equippedAvatarId], references: [id], onDelete: Nullify, onUpdate: Cascade)
 }
+
+// DailyLessonRecord table
+// Tracks how many lessons a user has completed on a specific day
+model DailyLessonRecord {
+  id        String   @id @default(cuid())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  date      DateTime @db.Date // Stores only the date part, effectively tracking by day
+  lessonsCompleted Int    @default(0)
+
+  @@unique([userId, date]) // A user has one lesson record per day
+}
+
 
 // UserProgress table
 model UserProgress {
@@ -69,10 +89,12 @@ model Avatar {
 model UserAvatar {
   id          String @id @default(cuid())
   userId      String
-  user        User   @relation(fields: [userId], references: [id])
+  user        User   @relation(fields: [userId], references: [id], onDelete: Cascade)
   avatarId    String
-  avatar      Avatar @relation(fields: [avatarId], references: [id])
+  avatar      Avatar @relation(fields: [avatarId], references: [id], onDelete: Cascade)
   purchaseDate DateTime @default(now())
+
+  equippedByUsers User[] @relation("EquippedUserAvatar") // Inverse relation for equippedAvatar on User
 
   @@unique([userId, avatarId])
 }
