@@ -1,4 +1,6 @@
-import { Abi } from 'viem';
+import { Abi } from 'viem'
+
+export const MARKETPLACE_ADDRESS = '0x'
 
 // Standard ABI for ERC721 Transfer event
 // Used if a contract-specific ABI for Transfer is not provided
@@ -13,16 +15,16 @@ export const genericErc721TransferAbi = [
     name: 'Transfer',
     type: 'event',
   },
-] as const; // Using 'as const' for stricter typing with Viem
+] as const // Using 'as const' for stricter typing with Viem
 
-export type SbtType = 'Badge' | 'Certificate';
+export type SbtType = 'Badge' | 'Certificate'
 
 export interface MonitoredContract {
-  contractAddress: `0x${string}`; // Viem expects hex addresses with 0x prefix
-  contractName: string; // For logging and identification
-  sbtType: SbtType;
-  languageLevel: string; // e.g., "a1", "b2" (should be lowercase to match URL path)
-  abi: Abi; // Full ABI or at least the Transfer event
+  contractAddress: `0x${string}` // Viem expects hex addresses with 0x prefix
+  contractName: string // For logging and identification
+  sbtType: SbtType
+  languageLevel: string // e.g., "a1", "b2" (should be lowercase to match URL path)
+  abi: Abi // Full ABI or at least the Transfer event
 }
 
 // Example structure for monitoredContracts array.
@@ -44,7 +46,7 @@ export const monitoredContracts: MonitoredContract[] = [
   //   abi: genericErc721TransferAbi, // Or specific contract ABI
   // },
   // Add more contract configurations here
-];
+]
 
 // Reminder for the user:
 // 1. Populate the `monitoredContracts` array above with the actual details
@@ -58,7 +60,7 @@ export const monitoredContracts: MonitoredContract[] = [
 if (process.env.NODE_ENV !== 'test' && monitoredContracts.length === 0) {
   console.warn(
     'WARNING: The `monitoredContracts` array in `src/config/contractConfig.ts` is empty. ' +
-    'The SBT listener service will not monitor any contracts. ' +
-    'Please populate it with your contract details.'
-  );
+      'The SBT listener service will not monitor any contracts. ' +
+      'Please populate it with your contract details.'
+  )
 }

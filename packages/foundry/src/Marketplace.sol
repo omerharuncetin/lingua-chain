@@ -81,10 +81,6 @@ contract MultiNFTMarketplace {
     // Mint NFT to buyer
     IMintableNFT(nftAddress).mint(msg.sender);
 
-    // If NFTs are single edition per contract, mark unavailable after purchase
-    // Uncomment if needed:
-    // available[index] = false;
-
     emit Purchased(msg.sender, index, price);
   }
 }
