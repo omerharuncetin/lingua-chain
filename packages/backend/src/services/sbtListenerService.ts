@@ -1,5 +1,5 @@
 import { Log, decodeEventLog } from 'viem'
-import { publicClient } from '../lib/viemClient'
+import { webSocketclient } from '../lib/viemClient'
 import prisma from '../lib/prisma'
 import { genericErc721TransferAbi, MonitoredContract, monitoredContracts } from '../config/contractConfig'
 
@@ -120,7 +120,7 @@ export function initializeSbtListeners() {
     )
 
     try {
-      publicClient.watchContractEvent({
+      webSocketclient.watchContractEvent({
         address: contract.contractAddress,
         abi: contract.abi,
         eventName: 'Transfer',

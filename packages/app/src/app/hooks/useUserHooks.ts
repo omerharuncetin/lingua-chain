@@ -60,16 +60,16 @@ export const useGetUsers = (walletAddress?: string) => {
 };
 
 // GET /api/users/:id - Get a specific user by ID
-export const useGetUserById = (userId?: string) => {
+export const useGetUserById = () => {
   const { address, isConnected } = useAccount();
   return useQuery<User, Error>({
-    queryKey: [USER_QUERY_KEY, userId],
+    queryKey: [USER_QUERY_KEY, address],
     queryFn: async () => {
-      if (!userId) throw new Error('User ID is required');
-      const { data } = await apiClient.get(`/api/users/${userId}`);
+      if (!address) throw new Error('User ID is required');
+      const { data } = await apiClient.get(`/api/users/${address}`);
       return data;
     },
-    enabled: isConnected && !!userId, // Only fetch if connected and userId is provided
+    enabled: isConnected && !!address, // Only fetch if connected and userId is provided
   });
 };
 
@@ -104,14 +104,14 @@ export const useUpdateUser = () => {
   const queryClient = useQueryClient();
   const { address, isConnected } = useAccount();
 
-  return useMutation<User, Error, { userId: string; payload: UpdateUserPayload }>({
-    mutationFn: async ({ userId, payload }) => {
+  return useMutation<User, Error, { payload: UpdateUserPayload }>({
+    mutationFn: async ({ payload }) => {
       if (!isConnected || !address) {
         throw new Error('User not connected');
       }
       // Optional: Check if the connected user is the one being updated
       // if (address !== userToUpdate.walletAddress) throw new Error("Unauthorized");
-      const { data } = await apiClient.put(`/api/users/${userId}`, payload);
+      const { data } = await apiClient.put(`/api/users/${address}`, payload);
       return data;
     },
     onSuccess: (updatedUser) => {
@@ -127,16 +127,16 @@ export const useDeleteUser = () => {
   const queryClient = useQueryClient();
   const { address, isConnected } = useAccount();
 
-  return useMutation<void, Error, string>({ // string is userId
-    mutationFn: async (userId) => {
+  return useMutation<void, Error>({
+    mutationFn: async () => {
       if (!isConnected || !address) {
         throw new Error('User not connected');
       }
-      await apiClient.delete(`/api/users/${userId}`);
+      await apiClient.delete(`/api/users/${address}`);
     },
-    onSuccess: (data, userId) => {
+    onSuccess: (data) => {
       queryClient.invalidateQueries({ queryKey: [USER_QUERY_KEY] });
-      queryClient.invalidateQueries({ queryKey: [USER_QUERY_KEY, userId] });
+      queryClient.invalidateQueries({ queryKey: [USER_QUERY_KEY, address] });
     },
   });
 };
@@ -146,21 +146,21 @@ export const useCompleteLesson = () => {
   const queryClient = useQueryClient();
   const { address, isConnected } = useAccount();
 
-  return useMutation<any, Error, { userId: string; payload: CompleteLessonPayload }>({
-    mutationFn: async ({ userId, payload }) => {
+  return useMutation<any, Error, { payload: CompleteLessonPayload }>({
+    mutationFn: async ({ payload }) => {
       if (!isConnected || !address) {
         throw new Error('User not connected');
       }
-      const { data } = await apiClient.post(`/api/users/${userId}/complete-lesson`, payload);
+      const { data } = await apiClient.post(`/api/users/${address}/complete-lesson`, payload);
       return data;
     },
     onSuccess: (data, variables) => {
       // Invalidate user data as it might include points, progress, daily limits
-      queryClient.invalidateQueries({ queryKey: [USER_QUERY_KEY, variables.userId] });
+      queryClient.invalidateQueries({ queryKey: [USER_QUERY_KEY, address] });
       // Invalidate leaderboard if lesson completion affects it
       queryClient.invalidateQueries({ queryKey: ['leaderboardEntries'] }); // Assuming 'leaderboardEntries' is a common key
       // Invalidate user progress
-      queryClient.invalidateQueries({ queryKey: ['userProgress', variables.userId] });
+      queryClient.invalidateQueries({ queryKey: ['userProgress', address] });
     },
   });
 };
@@ -170,16 +170,16 @@ export const useEquipAvatar = () => {
   const queryClient = useQueryClient();
   const { address, isConnected } = useAccount();
 
-  return useMutation<any, Error, { userId: string; payload: EquipAvatarPayload }>({
-    mutationFn: async ({ userId, payload }) => {
+  return useMutation<any, Error, { payload: EquipAvatarPayload }>({
+    mutationFn: async ({ payload }) => {
       if (!isConnected || !address) {
         throw new Error('User not connected');
       }
-      const { data } = await apiClient.post(`/api/users/${userId}/equip-avatar`, payload);
+      const { data } = await apiClient.post(`/api/users/${address}/equip-avatar`, payload);
       return data;
     },
     onSuccess: (data, variables) => {
-      queryClient.invalidateQueries({ queryKey: [USER_QUERY_KEY, variables.userId] });
+      queryClient.invalidateQueries({ queryKey: [USER_QUERY_KEY, address] });
     },
   });
 };

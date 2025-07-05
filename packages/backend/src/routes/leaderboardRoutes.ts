@@ -13,7 +13,7 @@ router.post('/', async (req: Request, res: Response) => {
 
   try {
     // Check if user exists
-    const userExists = await prisma.user.findUnique({ where: { walletAddress: userId } });
+    const userExists = await prisma.user.findUnique({ where: { walletAddress: (userId as string).toLowerCase() } });
     if (!userExists) {
       return res.status(404).json({ error: 'User not found. Cannot create leaderboard entry.' });
     }

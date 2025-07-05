@@ -24,7 +24,7 @@ router.post('/', async (req: Request, res: Response) => {
   }
 
   try {
-    const userExists = await prisma.user.findUnique({ where: { walletAddress: userId } })
+    const userExists = await prisma.user.findUnique({ where: { walletAddress: userId.toLowerCase() } })
     if (!userExists) {
       return res.status(404).json({ error: 'User not found.' })
     }
@@ -71,7 +71,7 @@ router.get('/', async (req: Request, res: Response) => {
   }
 
   try {
-    const userExists = await prisma.user.findUnique({ where: { walletAddress: userId } })
+    const userExists = await prisma.user.findUnique({ where: { walletAddress: userId.toLowerCase() } })
     if (!userExists) {
       return res.status(404).json({ error: 'User not found.' })
     }
@@ -102,7 +102,7 @@ router.delete('/:certificateId', async (req: Request, res: Response) => {
 
   try {
     const certificate = await prisma.certificate.findUnique({ where: { id: certificateId } })
-    const user = await prisma.user.findUnique({ where: { walletAddress: userId } })
+    const user = await prisma.user.findUnique({ where: { walletAddress: userId.toLowerCase() } })
     if (!certificate || !user) {
       return res.status(404).json({ error: 'Certificate not found.' })
     }

@@ -32,7 +32,7 @@ router.post('/', async (req: Request, res: Response) => {
   }
 
   try {
-    const userExists = await prisma.user.findUnique({ where: { walletAddress: userId } })
+    const userExists = await prisma.user.findUnique({ where: { walletAddress: userId.toLowerCase() } })
     if (!userExists) {
       return res.status(404).json({ error: 'User not found.' })
     }
@@ -87,7 +87,7 @@ router.get('/', async (req: Request, res: Response) => {
   }
 
   try {
-    const userExists = await prisma.user.findUnique({ where: { walletAddress: userId } })
+    const userExists = await prisma.user.findUnique({ where: { walletAddress: userId.toLowerCase() } })
     if (!userExists) {
       return res.status(404).json({ error: 'User not found.' })
     }
@@ -118,7 +118,7 @@ router.delete('/:badgeId', async (req: Request, res: Response) => {
 
   try {
     const badge = await prisma.badge.findUnique({ where: { id: badgeId } })
-    const user = await prisma.user.findUnique({ where: { walletAddress: userId } })
+    const user = await prisma.user.findUnique({ where: { walletAddress: userId.toLowerCase() } })
     if (!badge || !user) {
       return res.status(404).json({ error: 'Badge not found.' })
     }

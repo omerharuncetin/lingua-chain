@@ -15,7 +15,7 @@ router.post('/', async (req: Request, res: Response) => {
 
   try {
     // Check if user exists
-    const userExists = await prisma.user.findUnique({ where: { walletAddress: userId } })
+    const userExists = await prisma.user.findUnique({ where: { walletAddress: userId.toLowerCase() } })
     if (!userExists) {
       return res.status(404).json({ error: 'User not found.' })
     }
@@ -69,7 +69,7 @@ router.post('/', async (req: Request, res: Response) => {
 router.get('/', async (req: Request, res: Response) => {
   const { userId } = req.params
   try {
-    const userExists = await prisma.user.findUnique({ where: { walletAddress: userId } })
+    const userExists = await prisma.user.findUnique({ where: { walletAddress: userId.toLowerCase() } })
     if (!userExists) {
       return res.status(404).json({ error: 'User not found.' })
     }
@@ -109,7 +109,7 @@ router.delete('/:userAvatarId', async (req: Request, res: Response) => {
     })
 
     const userEntry = await prisma.user.findUnique({
-      where: { walletAddress: userId },
+      where: { walletAddress: userId.toLowerCase() },
     })
 
     if (!userAvatarEntry || !userEntry) {

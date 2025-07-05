@@ -1,4 +1,4 @@
-import { Address, createPublicClient, createWalletClient, Hex, http } from 'viem'
+import { Address, createPublicClient, createWalletClient, Hex, http, webSocket } from 'viem'
 import { privateKeyToAccount } from 'viem/accounts'
 import { celoAlfajores } from 'viem/chains'
 
@@ -6,6 +6,12 @@ import { celoAlfajores } from 'viem/chains'
 // You can add a custom transport if you have a specific RPC provider URL,
 // otherwise, Viem will use the default public RPC for Celo Alfajores.
 const account = privateKeyToAccount(process.env.PRIVATE_KEY as Hex)
+
+// WebSocket transport kullanın
+export const webSocketclient = createPublicClient({
+  chain: celoAlfajores,
+  transport: webSocket('wss://alfajores-forno.celo-testnet.org/ws'), // WebSocket endpoint
+})
 
 export const publicClient = createPublicClient({
   chain: celoAlfajores,

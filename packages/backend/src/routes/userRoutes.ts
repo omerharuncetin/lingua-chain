@@ -14,7 +14,7 @@ router.post('/', async (req: Request, res: Response) => {
   try {
     const currentUser = await prisma.user.findFirst({
       where: {
-        walletAddress: walletAddress
+        walletAddress: (walletAddress as string).toLowerCase()
       }
     })
 
@@ -25,7 +25,7 @@ router.post('/', async (req: Request, res: Response) => {
 
     const newUser = await prisma.user.create({
       data: {
-        walletAddress,
+        walletAddress: (walletAddress as string).toLowerCase(),
         username,
       },
     })
@@ -51,7 +51,7 @@ router.post('/:userId/complete-lesson', async (req: Request, res: Response) => {
   try {
     // 1. Fetch user and their equipped avatar details
     const user = await prisma.user.findUnique({
-      where: { id: userId },
+      where: { walletAddress: userId.toLowerCase() },
       include: {
         equippedAvatar: {
           // Include the UserAvatar record
@@ -81,13 +81,13 @@ router.post('/:userId/complete-lesson', async (req: Request, res: Response) => {
 
     // 3. Find or create DailyLessonRecord for the user for today
     let dailyRecord = await prisma.dailyLessonRecord.findUnique({
-      where: { userId_date: { userId, date: today } },
+      where: { userId_date: { userId: user.id, date: today } },
     })
 
     if (!dailyRecord) {
       dailyRecord = await prisma.dailyLessonRecord.create({
         data: {
-          userId,
+          userId: user.id,
           date: today,
           lessonsCompleted: 0,
         },
@@ -113,10 +113,10 @@ router.post('/:userId/complete-lesson', async (req: Request, res: Response) => {
       })
 
       const lb = await tx.leaderboardEntry.upsert({
-        where: { userId_language: { userId, language: languageLevel.toUpperCase() } },
+        where: { userId_language: { userId: user.id, language: languageLevel.toUpperCase() } },
         update: { points: { increment: pointsToAward } },
         create: {
-          userId,
+          userId: user.id,
           language: languageLevel.toUpperCase(),
           points: pointsToAward,
         },
@@ -145,7 +145,7 @@ router.get('/', async (req: Request, res: Response) => {
   try {
     const users = await prisma.user.findMany({
       where: {
-        walletAddress: walletAddress ? String(walletAddress) : undefined,
+        walletAddress: walletAddress ? String(walletAddress).toLowerCase() : undefined,
       },
     })
     res.json(users)
@@ -163,7 +163,7 @@ router.get('/:id', async (req: Request, res: Response) => {
     today.setUTCHours(0, 0, 0, 0) // Normalize to start of UTC day
 
     const user = await prisma.user.findUnique({
-      where: { id },
+      where: { walletAddress: id.toLowerCase() },
       include: {
         progress: true,
         leaderboard: true,
@@ -221,7 +221,7 @@ router.put('/:id', async (req: Request, res: Response) => {
 
   try {
     const updatedUser = await prisma.user.update({
-      where: { id },
+      where: { walletAddress: id.toLowerCase() },
       data: { username },
     })
     res.json(updatedUser)
@@ -240,7 +240,7 @@ router.delete('/:id', async (req: Request, res: Response) => {
   const { id } = req.params
   try {
     await prisma.user.delete({
-      where: { id },
+      where: { walletAddress: id.toLowerCase() },
     })
     res.status(204).send() // No content
   } catch (error: any) {
@@ -266,7 +266,7 @@ router.post('/:userId/equip-avatar', async (req: Request, res: Response) => {
 
   try {
     // 1. Verify the user exists
-    const user = await prisma.user.findUnique({ where: { id: userId } })
+    const user = await prisma.user.findUnique({ where: { walletAddress: userId.toLowerCase() } })
     if (!user) {
       return res.status(404).json({ error: 'User not found.' })
     }
@@ -280,7 +280,7 @@ router.post('/:userId/equip-avatar', async (req: Request, res: Response) => {
       return res.status(404).json({ error: 'Avatar ownership record (UserAvatar) not found.' })
     }
 
-    if (userAvatar.userId !== userId) {
+    if (userAvatar.userId !== user.id) {
       return res.status(403).json({ error: 'This avatar does not belong to the specified user.' })
     }
 
@@ -289,7 +289,7 @@ router.post('/:userId/equip-avatar', async (req: Request, res: Response) => {
     //    which is handled by the @unique constraint on User.equippedAvatarId.
     //    If another user has it equipped, Prisma will throw a P2002 error.
     const updatedUser = await prisma.user.update({
-      where: { id: userId },
+      where: { id: user.id },
       data: { equippedAvatarId: userAvatarId },
       include: {
         equippedAvatar: {

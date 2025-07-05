@@ -14,7 +14,7 @@ router.post('/', async (req: Request, res: Response) => {
   }
 
   try {
-    const userExists = await prisma.user.findUnique({ where: { walletAddress: userId } });
+    const userExists = await prisma.user.findUnique({ where: { walletAddress: userId.toLowerCase() } });
     if (!userExists) {
       return res.status(404).json({ error: 'User not found' });
     }
@@ -44,7 +44,7 @@ router.post('/', async (req: Request, res: Response) => {
 router.get('/', async (req: Request, res: Response) => {
   const { userId } = req.params;
   try {
-    const userExists = await prisma.user.findUnique({ where: { walletAddress: userId } });
+    const userExists = await prisma.user.findUnique({ where: { walletAddress: userId.toLowerCase() } });
     if (!userExists) {
       return res.status(404).json({ error: 'User not found' });
     }
@@ -63,7 +63,7 @@ router.get('/', async (req: Request, res: Response) => {
 router.get('/:language', async (req: Request, res: Response) => {
   const { userId, language } = req.params;
   try {
-    const userExists = await prisma.user.findUnique({ where: { walletAddress: userId } });
+    const userExists = await prisma.user.findUnique({ where: { walletAddress: userId.toLowerCase() } });
     if (!userExists) {
       return res.status(404).json({ error: 'User not found' });
     }
@@ -97,7 +97,7 @@ router.put('/:language', async (req: Request, res: Response) => {
   }
 
   try {
-    const userExists = await prisma.user.findUnique({ where: { walletAddress: userId } });
+    const userExists = await prisma.user.findUnique({ where: { walletAddress: userId.toLowerCase() } });
     if (!userExists) {
       return res.status(404).json({ error: 'User not found' });
     }
@@ -125,7 +125,7 @@ router.put('/:language', async (req: Request, res: Response) => {
 router.delete('/:language', async (req: Request, res: Response) => {
   const { userId, language } = req.params;
   try {
-    const userExists = await prisma.user.findUnique({ where: { walletAddress: userId } });
+    const userExists = await prisma.user.findUnique({ where: { walletAddress: userId.toLowerCase() } });
     if (!userExists) {
       return res.status(404).json({ error: 'User not found' });
     }

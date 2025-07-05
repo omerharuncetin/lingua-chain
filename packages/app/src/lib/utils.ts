@@ -15,7 +15,7 @@ export const getBadgeAddressByLevel = (level: CEFRLevel): Address => {
 export const getCertificateAddressByLevel = (level: CEFRLevel): Address => {
   switch (level) {
     case 'A1':
-      return "0x1983d9d42defef35a6be64c0669d979e4b878247"
+      return "0x48fd1ccb869ec353941e6e217b2961aaebceecbe"
     case 'A2':
       return '0xc1420209ca65750da33c11abe0f48a9a8f044c33';
     case 'B1':
@@ -25,7 +25,7 @@ export const getCertificateAddressByLevel = (level: CEFRLevel): Address => {
     case 'C1':
       return '0x5921361ed9cd6e67cd8870b84e6c2d4c7244d5bb';
     case 'C2':
-      return '0x41ed27f978463b21639704883f1466a67c0e56af';
+      return '0x2c873eaec72c11b412b5886f7be0a5995dd5357b';
     default:
       return zeroAddress
   }
