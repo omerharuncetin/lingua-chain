@@ -60,7 +60,7 @@ LinguaChain is Duolingo meets Web3:
 ## 🚀 Getting Started
 
 ```bash
-git clone https://github.com/yourusername/linguachain.git
-cd linguachain
+git clone https://github.com/omerharuncetin/lingua-chain.git
+cd lingua-chain
 yarn install
 yarn dev
