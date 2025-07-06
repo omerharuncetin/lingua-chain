@@ -1,5 +1,11 @@
-# Use Node.js 18 Alpine for smaller image size
-FROM node:18-alpine AS builder
+# Use Node.js 18 Debian slim for better Prisma compatibility
+FROM node:18-slim AS builder
+
+# Install OpenSSL and other dependencies for Prisma
+RUN apt-get update && apt-get install -y \
+    openssl \
+    ca-certificates \
+    && rm -rf /var/lib/apt/lists/*
 
 # Set working directory
 WORKDIR /app
@@ -18,14 +24,18 @@ RUN npx prisma generate
 RUN npm run build
 
 # Production stage
-FROM node:18-alpine AS production
+FROM node:18-slim AS production
 
-# Install dumb-init for proper signal handling
-RUN apk add --no-cache dumb-init
+# Install dependencies for Prisma and signal handling
+RUN apt-get update && apt-get install -y \
+    openssl \
+    ca-certificates \
+    dumb-init \
+    && rm -rf /var/lib/apt/lists/*
 
 # Create non-root user for security
-RUN addgroup -g 1001 -S nodejs
-RUN adduser -S nodeuser -u 1001
+RUN groupadd -g 1001 nodejs
+RUN useradd -r -u 1001 -g nodejs nodeuser
 
 # Set working directory
 WORKDIR /app
@@ -42,6 +52,9 @@ COPY --from=builder /app/node_modules/.prisma ./node_modules/.prisma
 
 # Copy Prisma schema if needed for migrations
 COPY --from=builder /app/prisma ./prisma
+
+# Copy .env file if it exists (for development - use secrets in production)
+COPY .env* ./
 
 # Change ownership of the app directory to nodeuser
 RUN chown -R nodeuser:nodejs /app
