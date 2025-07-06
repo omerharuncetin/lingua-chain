@@ -66,7 +66,7 @@ const Marketplace = () => {
     // Find equipped avatar ID
     const equippedAvatarId = useMemo(() => {
         const equippedUserAvatar = currentUser.data?.equippedAvatar;
-        return equippedUserAvatar?.avatarId || null;
+        return equippedUserAvatar?.avatar.id || null;
     }, [currentUser]);
 
     const handlePurchase = async (avatarId: string) => {
