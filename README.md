@@ -1,68 +1,66 @@
-# Nexth
+# 🧠 LinguaChain  
+*Learn. Earn. Certify. On-Chain.*
 
-A Next.js + Ethereum starter kit with Viem, Wagmi, Web3Modal, SIWE, Tailwind, daisyUI and more to quickly ship production-ready Web3 Apps ⚡
+LinguaChain is a gamified, Web3-powered English learning platform where users complete interactive lessons across CEFR levels (A1 to C2), earn tokens, and mint **soulbound NFT certificates** — all seamlessly integrated with Ethereum & Celo.
 
-![Nexth Readme Image](https://nexth.vercel.app/opengraph-image)
+---
 
-## Packages 📦
+## 🌍 What is LinguaChain?
 
-- [App](./packages/app) - Next.js 14, with App router
-- [Hardhat](./packages/hardhat/) - Hardhat projects
-- [Foundry](./packages/foundry/) - Foundry projects
+LinguaChain is Duolingo meets Web3:
 
-Choose the framework to use, "hardhat" or "foundry", eliminating the one we will not use.
+- 🧠 Learn English through fun, bite-sized lessons
+- 🏆 Earn in game coins for completing lessons
+- 🎓 Pass timed exams to mint **soulbound certificates** (SBTs)
+- 👤 Use avatars (NFTs) to boost your daily lesson limit
+- 💰 Use **USDC** to buy beautiful designed avatars
+- 📊 Climb the leaderboard and showcase your progress
 
-1- Delete the folder of the framework that will not be used:
-./packages/hardhat/ or ./packages/foundry/
+---
 
-2- Go to "packages/app/wagmi.config.ts" and remove the plugin that will not be used.
+## 🎮 Features
 
-```ts
-hardhat({
-    project: '../hardhat',
-    deployments: {
-    Message: {
-        11155111: '0xcc5a0d6268d70811edad77799f2168afe6382e89',
-    },
-    },
-}),
-foundry({
-    project: '../foundry',
-    deployments: {
-    Message: {
-        11155111: '0xcc5a0d6268d70811edad77799f2168afe6382e89',
-    },
-    },
-}),
-```
+- 📚 **Gamified Lesson Flow**  
+  Complete structured, Duolingo-style lessons for each CEFR level (A1–C2). Each level contains interactive exercises: multiple choice, fill-in-the-blank, sentence builder, and more.
 
-## Development 🛠️
+- ⏱️ **Timed Certification Exams**  
+  After completing a level, users can take a 20-minute timed exam (e.g., 20 B1-level grammar questions). A passing score (≥70%) lets them mint a **soulbound NFT certificate**.
+
+- 🧾 **On-Chain Proof of Learning**  
+  Certificates are **non-transferable NFTs**, forever tied to the user’s wallet.
+
+- 👾 **NFT Avatar Marketplace**  
+  Avatars increase daily lesson limits and are purchasable using **USDC**.
+
+- 🪙 **Token Rewards System** (soon)
+  Earn in-game Coins per lesson. Convert coins to USDC based on performance and streak conditions .
+
+- 🧑‍🎓 **Identity & Storage**  
+  - Uses **Self** for wallet-linked identity verification during certification  
+  - Uses **Walrus** for decentralized storage of lesson and progress data
+
+- 🏆 **Leaderboard & Stats** (soon)
+  View global ranks based on XP, badges, and level certifications. (soon)
+
+---
+
+## 🛠️ Tech Stack
+
+| Layer         | Tech                                              |
+|---------------|---------------------------------------------------|
+| Frontend      | `Next.js 15`, `TypeScript`, `TailwindCSS`, `shadcn/ui` |
+| Backend       | `Node.js`, `TypeScript`, `Docker`, `PostgreSQL` |
+| Web3 Stack    | `wagmi`, `viem`, `foundry`, `ERC-721`, `ERC-721 SBT` |
+| Identity & ZK     | [`Self`](https://self.xyz/)                         |
+| Decentralized Storage | [`Walrus`](https://www.walrus.xyz/)                  |
+| Contracts     | `Solidity`, deployed to Celo testnet          |
+
+---
+
+## 🚀 Getting Started
 
 ```bash
-npm run dev
-# or
+git clone https://github.com/yourusername/linguachain.git
+cd linguachain
+yarn install
 yarn dev
-```
-
-## Funding
-
-This project is funding its core dependencies with [Drips protocol](https://www.drips.network/app/projects/github/wslyvh/nexth?exact). A split contract that splits 60% of all proceeds with core contributors and 40% for dependencies.
-
-### Contributors
-
-Contributors to this repository are rewarded based on their contributions to the project. Their contribution score is calculated based on a combination of the commits, issues, pull requests, and other contributions that determine the amount of funding they receives.
-
-The score is calculated using [Contributor Graph](https://github.com/wslyvh/contributor-graph).
-
-### Distribution
-
-- In 2024 the project received $7,075 USD in funding. 60% ($4,245) is distributed to core contributors.
-  - https://arbiscan.io/tx/0x95d6cd302374d64a401e35a27570fec9793bd9751cbfdeec36d3ade3b1965c24
-
-## Deploy on Vercel 🚢
-
-[![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new/clone?repository-url=https%3A%2F%2Fgithub.com%2Fwslyvh%2Fnexth)
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=nexth&filter=next.js&utm_source=nexth&utm_campaign=nexth-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/deployment) for more details.
