@@ -4,12 +4,11 @@ import { useState, useMemo } from "react";
 import MarketplaceHeader from "@/components/marketplace/MarketplaceHeader";
 import AvatarTabs from "@/components/marketplace/AvatarTabs";
 import { useRouter } from "next/navigation";
-import { useGetAvatars } from "../hooks/useAvatarHooks";
+import { Avatar, useGetAvatars } from "../hooks/useAvatarHooks";
 import { useGetUserAvatars } from "../hooks/useUserAvatarHooks";
 import { useGetUserById, useEquipAvatar } from "../hooks/useUserHooks";
 import { useAccount } from "wagmi";
 import {
-    useUSDCBalance,
     useAvatarPurchaseFlow,
     useAllAvatarsInfo
 } from "../hooks/useAvatarMarketplaceHooks";
@@ -48,13 +47,13 @@ const Marketplace = () => {
     const userAvatars = userAvatarsResponse.data || [];
 
     // Extract owned avatars (from userAvatars, get the avatar details)
-    const ownedAvatars = useMemo(() => {
+    const ownedAvatars: Avatar[] = useMemo(() => {
         return userAvatars
             .map(userAvatar => {
                 // Find the corresponding avatar from allAvatars
                 return allAvatars.find(avatar => avatar.id === userAvatar.avatarId);
             })
-            .filter(avatar => avatar !== undefined);
+            .filter(avatar => avatar != null) as Avatar[];
     }, [allAvatars, userAvatars]);
 
     // Extract available avatars (not owned)
