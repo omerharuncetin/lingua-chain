@@ -6,12 +6,16 @@ import CertificateRequirements from "@/components/certificate/CertificateRequire
 import CertificateExam from "@/components/certificate/CertificateExam";
 import CertificateResults from "@/components/certificate/CertificateResults";
 import { examQuestions } from "@/data/examQuestions";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
+import { useGetUserProgressAll } from "../hooks/useUserProgressHooks";
 
 const Certificate = () => {
     const navigate = useRouter();
+    const searchParams = useSearchParams()
 
-    const [activeLevel, setActiveLevel] = useState("B1");
+    const progressResponse = useGetUserProgressAll();
+
+    const [activeLevel, setActiveLevel] = useState(searchParams.get('level') || "A1");
     const [examStarted, setExamStarted] = useState(false);
     const [currentQuestion, setCurrentQuestion] = useState(0);
     const [selectedAnswer, setSelectedAnswer] = useState<number | null>(null);
@@ -20,6 +24,7 @@ const Certificate = () => {
     const [isComplete, setIsComplete] = useState(false);
     const [timeLeft, setTimeLeft] = useState(20 * 60); // 20 minutes in seconds
     const [timeFailed, setTimeFailed] = useState(false);
+    const [canTakeExam, setCanTakeExam] = useState(false);
 
     const currentLevelQuestions = examQuestions[activeLevel as keyof typeof examQuestions];
     const currentQ = currentLevelQuestions[currentQuestion];
@@ -42,6 +47,28 @@ const Certificate = () => {
         return () => clearInterval(interval);
     }, [examStarted, isComplete, timeFailed]);
 
+    useEffect(() => {
+        if (!progressResponse.data) {
+            setCanTakeExam(false);
+            return;
+        }
+
+        const currentLevel = progressResponse.data.find(x => x.language.toLowerCase() === activeLevel.toLowerCase());
+
+        if (!currentLevel) {
+            setCanTakeExam(false);
+            return;
+        }
+
+
+        if (currentLevel && currentLevel.lesson != 10) {
+            setCanTakeExam(false);
+            return;
+        }
+
+        setCanTakeExam(true);
+    }, [activeLevel, progressResponse.data])
+
     const handleTabChange = (level: string) => {
         if (!examStarted) {
             setActiveLevel(level);
@@ -57,6 +84,7 @@ const Certificate = () => {
     };
 
     const handleStartExam = () => {
+        if (!canTakeExam) return;
         setExamStarted(true);
         setTimeLeft(20 * 60); // Reset to 20 minutes
     };
@@ -107,6 +135,7 @@ const Certificate = () => {
     if (!examStarted) {
         return (
             <CertificateRequirements
+                canTakeExam={canTakeExam}
                 activeLevel={activeLevel}
                 onTabChange={handleTabChange}
                 onStartExam={handleStartExam}

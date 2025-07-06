@@ -1,5 +1,5 @@
 import { Log, decodeEventLog } from 'viem'
-import { publicClient } from '../lib/viemClient'
+import { webSocketclient } from '../lib/viemClient'
 import prisma from '../lib/prisma'
 import { MARKETPLACE_ADDRESS } from '../config/contractConfig'
 import { MARKETPLACE_ABI } from '../config/abi'
@@ -60,7 +60,7 @@ export function initializeMarketplaceListener() {
   console.log(`[Marketplace Listener Service] Initializing listener for Marketplace Contract`)
 
   try {
-    publicClient.watchContractEvent({
+    webSocketclient.watchContractEvent({
       address: MARKETPLACE_ADDRESS,
       abi: MARKETPLACE_ABI,
       eventName: 'Purchased',

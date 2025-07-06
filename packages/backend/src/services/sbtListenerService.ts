@@ -55,12 +55,14 @@ async function handleTransferEvent(log: Log, contract: MonitoredContract) {
         update: {
           badgeUrl: metadataUrl,
           tokenId: tokenIdStr,
+          transactionHash: log.transactionHash || '',
           issueDate: new Date(), // Update issue date if it's an update on the same level
         },
         create: {
           userId: user.id,
           languageLevel: contract.languageLevel.toUpperCase(), // Schema stores uppercase levels
           badgeUrl: metadataUrl,
+          transactionHash: log.transactionHash || '',
           tokenId: tokenIdStr,
         },
       })
@@ -79,12 +81,14 @@ async function handleTransferEvent(log: Log, contract: MonitoredContract) {
           certificateUrl: metadataUrl,
           tokenId: tokenIdStr,
           issueDate: new Date(),
+          transactionHash: log.transactionHash || '',
         },
         create: {
           userId: user.id,
           languageLevel: contract.languageLevel.toUpperCase(),
           certificateUrl: metadataUrl,
           tokenId: tokenIdStr,
+          transactionHash: log.transactionHash || '',
         },
       })
       console.log(

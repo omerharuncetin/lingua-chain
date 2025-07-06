@@ -11,9 +11,12 @@ import userAvatarRoutes from './routes/userAvatarRoutes';
 import badgeRoutes from './routes/badgeRoutes'; // Contains both generic and user-specific logic
 import certificateRoutes from './routes/certificateRoutes'; // Contains both generic and user-specific logic
 import nftMetadataRoutes from './routes/nftMetadataRoutes'; // New routes for NFT metadata
+import dailyLessonRoutes from './routes/dailyLessonRoutes'; // New routes for NFT metadata
 
 // Import services
 import { initializeSbtListeners } from './services/sbtListenerService'; // New SBT Listener Service
+import { seedAvatars } from './seed';
+import { initializeMarketplaceListener } from './services/marketplaceListenerService';
 
 const app = express();
 const port = process.env.PORT || 3001;
@@ -33,6 +36,12 @@ app.get('/', (req: Request, res: Response) => {
 
 // --- API Routes ---
 
+async function main() {
+  await seedAvatars()
+}
+
+main();
+
 // User routes
 app.use('/api/users', userRoutes);
 
@@ -46,6 +55,9 @@ app.use('/api/leaderboard', leaderboardRoutes);
 
 // Avatar (marketplace item) routes
 app.use('/api/avatars', avatarRoutes);
+
+// Daily lessons
+app.use('/api/daily-lessons', dailyLessonRoutes);
 
 // UserAvatar (owned avatars) routes (nested under users)
 app.use('/api/users/:userId/avatars', userAvatarRoutes);
@@ -64,6 +76,10 @@ app.use('/api/users/:userId/certificates', certificateRoutes); // certificateRou
 
 // NFT Metadata routes (for token URIs)
 app.use('/api/nft', nftMetadataRoutes);
+
+app.get('/health', (req, res) => {
+  res.status(200);
+})
 
 
 // Basic error handler (improved version can be added)
@@ -87,26 +103,26 @@ if (process.env.NODE_ENV !== 'test') {
     console.log(`Server running on http://localhost:${port}`);
     console.log('Registered routes:');
     // Simple route logging (can be made more sophisticated)
-    app._router.stack.forEach(function(r: any){
-      if (r.route && r.route.path){
+    app._router.stack.forEach(function (r: any) {
+      if (r.route && r.route.path) {
         console.log(Object.keys(r.route.methods).join(', ').toUpperCase() + '\t' + r.route.path);
       } else if (r.name === 'router' && r.handle.stack) {
-        r.handle.stack.forEach(function(sub_r: any){
-            if (sub_r.route && sub_r.route.path){
-                 let basePath = r.regexp.source.replace('^\\','').replace('\\/?(?=\\/|$)','').replace(/\\/g, '');
-                 if (basePath.endsWith('/')) basePath = basePath.slice(0,-1);
-                 if (basePath === "?(.*)") basePath = ""; // Ignore base for wildcard router if not more specific
+        r.handle.stack.forEach(function (sub_r: any) {
+          if (sub_r.route && sub_r.route.path) {
+            let basePath = r.regexp.source.replace('^\\', '').replace('\\/?(?=\\/|$)', '').replace(/\\/g, '');
+            if (basePath.endsWith('/')) basePath = basePath.slice(0, -1);
+            if (basePath === "?(.*)") basePath = ""; // Ignore base for wildcard router if not more specific
 
-                 console.log(Object.keys(sub_r.route.methods).join(', ').toUpperCase() + '\t' + basePath + sub_r.route.path);
-            }
+            console.log(Object.keys(sub_r.route.methods).join(', ').toUpperCase() + '\t' + basePath + sub_r.route.path);
+          }
         });
       }
     });
 
-    // Initialize SBT Listeners after server starts (or before, depending on preference)
-    console.log("Initializing SBT contract listeners...");
+    // Initialize Listeners after server starts (or before, depending on preference)
+    console.log("Initializing contract listeners...");
     initializeSbtListeners();
-
+    initializeMarketplaceListener();
   });
 }
 

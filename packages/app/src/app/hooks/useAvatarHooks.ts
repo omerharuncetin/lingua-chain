@@ -5,14 +5,14 @@ import { useAccount } from 'wagmi';
 import { API_URL } from '../config';
 
 // Types
-interface Avatar {
+export interface Avatar {
   id: string;
   name: string;
   description?: string;
   price: number;
   imageUrl: string;
   lessons: number; // Assuming lessons is part of Avatar schema based on nftMetadataRoutes
-  // ... other avatar fields
+  blockchainIndex: number;
 }
 
 const AVATAR_QUERY_KEY = 'avatars';

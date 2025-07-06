@@ -25,9 +25,9 @@ createAppKit({
   defaultNetwork: celoAlfajores,
   metadata: metadata,
   features: {
-    analytics: true, // Optional - defaults to your Cloud configuration
-    email: true,
-    onramp: true,
+    analytics: false, // Optional - defaults to your Cloud configuration
+    email: false,
+    onramp: false,
   },
 })
 

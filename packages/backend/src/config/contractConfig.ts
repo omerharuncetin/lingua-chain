@@ -1,6 +1,6 @@
 import { Abi } from 'viem'
 
-export const MARKETPLACE_ADDRESS = '0x'
+export const MARKETPLACE_ADDRESS = '0x5ec2e78ec51de81bb048c2315175577266ae5ac8'
 
 // Standard ABI for ERC721 Transfer event
 // Used if a contract-specific ABI for Transfer is not provided
@@ -45,28 +45,28 @@ export const monitoredContracts: MonitoredContract[] = [
     languageLevel: 'a2',
     abi: genericErc721TransferAbi, // Or specific contract ABI
   },
-   {
+  {
     contractAddress: '0x941a47be52ebb2dfa27b57dc7a3a647e9cb5d36c',
     contractName: 'LinguaB1LanguageBadge',
     sbtType: 'Badge',
     languageLevel: 'b1',
     abi: genericErc721TransferAbi, // Or specific contract ABI
   },
-   {
+  {
     contractAddress: '0xe4f0e62ac601f4c51f72f5db9e9ff1576f688629',
     contractName: 'LinguaB2LanguageBadge',
     sbtType: 'Badge',
     languageLevel: 'b2',
     abi: genericErc721TransferAbi, // Or specific contract ABI
   },
-   {
+  {
     contractAddress: '0xd90b6cf1a10525eeceeab84aac3d583b61b1230f',
     contractName: 'LinguaC1LanguageBadge',
     sbtType: 'Badge',
     languageLevel: 'c1',
     abi: genericErc721TransferAbi, // Or specific contract ABI
   },
-   {
+  {
     contractAddress: '0x916189572166b9711787a5ed07dd24b1f2da10d0',
     contractName: 'LinguaC2LanguageBadge',
     sbtType: 'Badge',
@@ -87,28 +87,28 @@ export const monitoredContracts: MonitoredContract[] = [
     languageLevel: 'a2',
     abi: genericErc721TransferAbi, // Or specific contract ABI
   },
-   {
+  {
     contractAddress: '0xbed78013f3f0935f04f93aa83de8a6ea61de5baa',
     contractName: 'LinguaB1Certificate',
     sbtType: 'Certificate',
     languageLevel: 'b1',
     abi: genericErc721TransferAbi, // Or specific contract ABI
   },
-   {
+  {
     contractAddress: '0x7b14c4c66d6d3a28ddc70ea677959c907ada9e1d',
     contractName: 'LinguaB2Certificate',
     sbtType: 'Certificate',
     languageLevel: 'b2',
     abi: genericErc721TransferAbi, // Or specific contract ABI
   },
-   {
+  {
     contractAddress: '0x5921361ed9cd6e67cd8870b84e6c2d4c7244d5bb',
     contractName: 'LinguaC1Certificate',
     sbtType: 'Certificate',
     languageLevel: 'c1',
     abi: genericErc721TransferAbi, // Or specific contract ABI
   },
-   {
+  {
     contractAddress: '0x2c873eaec72c11b412b5886f7be0a5995dd5357b',
     contractName: 'LinguaC2Certificate',
     sbtType: 'Certificate',
@@ -129,7 +129,7 @@ export const monitoredContracts: MonitoredContract[] = [
 if (process.env.NODE_ENV !== 'test' && monitoredContracts.length === 0) {
   console.warn(
     'WARNING: The `monitoredContracts` array in `src/config/contractConfig.ts` is empty. ' +
-      'The SBT listener service will not monitor any contracts. ' +
-      'Please populate it with your contract details.'
+    'The SBT listener service will not monitor any contracts. ' +
+    'Please populate it with your contract details.'
   )
 }

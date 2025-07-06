@@ -5,6 +5,7 @@ import { Card } from '@/components/ui/card';
 import { Users, Trophy, Wallet, Star, Shield, Zap } from 'lucide-react';
 import { useAppKit } from '@reown/appkit/react';
 import { useAccount } from 'wagmi';
+import { useEffect } from 'react';
 
 export default function Home() {
   const { open } = useAppKit();

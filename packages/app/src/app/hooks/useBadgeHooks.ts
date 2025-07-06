@@ -5,13 +5,14 @@ import { useAccount } from 'wagmi';
 import { API_URL } from '../config';
 
 // Types
-interface Badge {
+export interface Badge {
   id: string;
   userId: string;
   languageLevel: string;
   badgeUrl?: string; // Based on sbtListenerService, might be generated
   tokenId?: string;  // Based on sbtListenerService
   issueDate: Date;
+  transactionHash: string;
   // ... other badge fields
 }
 
@@ -61,7 +62,7 @@ export const useAwardBadge = () => {
   const queryClient = useQueryClient();
   const { address, isConnected } = useAccount();
 
-  return useMutation<Badge, Error, {payload: AwardBadgePayload }>({
+  return useMutation<Badge, Error, { payload: AwardBadgePayload }>({
     mutationFn: async ({ payload }) => {
       if (!isConnected || !address) {
         throw new Error('User not connected');

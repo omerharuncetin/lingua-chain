@@ -1,7 +1,57 @@
 import express, { Request, Response } from 'express'
 import prisma from '../lib/prisma'
+import { BlockchainService } from '../services/BlockchainService'
 
 const router = express.Router()
+
+async function createBasicAvatarForUser(walletAddress: string, userId: string) {
+
+  const avatar = await prisma.avatar.findFirst({
+    where: {
+      blockchainIndex: 0
+    }
+  })
+
+  if (!avatar) return;
+
+  let userAvatarExists = await prisma.userAvatar.findFirst({
+    where: {
+      userId: userId,
+      avatarId: avatar.id,
+    }
+  })
+
+  if (!userAvatarExists) {
+    const blockchainService = new BlockchainService();
+
+    await blockchainService.mintBasicAvatarForUser(walletAddress as `0x${string}`);
+
+    await prisma.userAvatar.create({
+      data: {
+        userId: userId,
+        avatarId: avatar.id,
+        purchaseDate: new Date()
+      }
+    });
+    userAvatarExists = await prisma.userAvatar.findFirst({
+      where: {
+        userId: userId,
+        avatarId: avatar.id,
+      }
+    })
+  }
+
+  if (!userAvatarExists) return;
+
+  await prisma.user.update({
+    where: {
+      id: userId
+    },
+    data: {
+      equippedAvatarId: userAvatarExists.id,
+    }
+  })
+}
 
 // POST /api/users - Create a new user
 router.post('/', async (req: Request, res: Response) => {
@@ -18,7 +68,14 @@ router.post('/', async (req: Request, res: Response) => {
       }
     })
 
-    if(currentUser) {
+    if (currentUser && currentUser.equippedAvatarId == null) {
+      console.log('yokkkk')
+      await createBasicAvatarForUser(currentUser.walletAddress, currentUser.id);
+      res.status(201).json(currentUser);
+      return;
+    }
+
+    if (currentUser) {
       res.status(201).json(currentUser);
       return;
     }
@@ -29,6 +86,9 @@ router.post('/', async (req: Request, res: Response) => {
         username,
       },
     })
+
+    await createBasicAvatarForUser(newUser.walletAddress, newUser.id);
+
     res.status(201).json(newUser)
   } catch (error: any) {
     if (error.code === 'P2002' && error.meta?.target?.includes('walletAddress')) {

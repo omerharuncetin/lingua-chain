@@ -5,14 +5,14 @@ import { useAccount } from 'wagmi';
 import { API_URL } from '../config';
 
 // Types
-interface Certificate {
+export interface Certificate {
   id: string;
   userId: string;
   languageLevel: string;
   certificateUrl: string;
   tokenId?: string;
   issueDate: Date;
-  // ... other certificate fields
+  transactionHash: string;
 }
 
 interface AwardCertificatePayload {

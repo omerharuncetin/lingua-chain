@@ -3,6 +3,11 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import axios from 'axios';
 import { useAccount } from 'wagmi';
 import { API_URL } from '../config';
+import { Avatar } from './useAvatarHooks';
+import { Certificate } from './useCertificateHooks';
+import { Badge } from './useBadgeHooks';
+import { DailyLessonRecord } from './useDailyLessonHooks';
+import { UserProgress } from './useUserProgressHooks';
 
 // Types (Ideally, these would be shared from a common types directory or generated from OpenAPI spec)
 // For now, we'll define basic interfaces here.
@@ -11,13 +16,13 @@ interface User {
   walletAddress: string;
   username?: string;
   // ... other user fields from your Prisma schema
-  progress?: any[];
+  progress?: UserProgress[];
   leaderboard?: any[];
-  avatars?: any[];
-  certificates?: any[];
-  badges?: any[];
-  equippedAvatar?: any;
-  dailyLessonRecordToday?: any;
+  avatars?: Avatar[];
+  certificates?: Certificate[];
+  badges?: Badge[];
+  equippedAvatar?: { avatar: Avatar };
+  dailyLessonRecordToday?: DailyLessonRecord;
 }
 
 interface CreateUserPayload {

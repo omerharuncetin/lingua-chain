@@ -6,6 +6,7 @@ import { CheckCircle, Trophy, Shield, Play, ArrowLeft } from "lucide-react";
 
 interface CertificateRequirementsProps {
   activeLevel: string;
+  canTakeExam: boolean;
   onTabChange: (level: string) => void;
   onStartExam: () => void;
   onNavigateBack: () => void;
@@ -13,6 +14,7 @@ interface CertificateRequirementsProps {
 
 const CertificateRequirements = ({
   activeLevel,
+  canTakeExam,
   onTabChange,
   onStartExam,
   onNavigateBack
@@ -93,6 +95,7 @@ const CertificateRequirements = ({
                 </div>
 
                 <Button
+                  disabled={!canTakeExam}
                   onClick={onStartExam}
                   className="w-full bg-gradient-to-r from-cyan-500 to-blue-600 hover:from-cyan-400 hover:to-blue-500 text-white font-bold py-4 rounded-xl transition-all duration-300 hover:scale-105 shadow-lg hover:shadow-cyan-500/25"
                 >

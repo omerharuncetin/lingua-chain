@@ -5,7 +5,7 @@ import { useAccount } from 'wagmi';
 import { API_URL } from '../config';
 
 // Types
-interface UserProgress {
+export interface UserProgress {
   id: string;
   userId: string;
   language: string;

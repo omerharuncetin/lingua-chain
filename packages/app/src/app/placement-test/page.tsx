@@ -159,7 +159,7 @@ const PlacementTest = () => {
         await progressMutation.mutateAsync({
             payload: {
                 language: level,
-                lesson: 0
+                lesson: 1
             },
         })
     }
