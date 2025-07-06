@@ -1,5 +1,7 @@
 import express, { Request, Response } from 'express';
 import prisma from '../lib/prisma';
+import { WalrusMetadata } from '../services/WalrusStorageService';
+import WalrusStorageService from '../services/WalrusStorageService';
 
 const router = express.Router({ mergeParams: true }); // mergeParams allows access to :userId from parent router
 
@@ -19,6 +21,16 @@ router.post('/', async (req: Request, res: Response) => {
       return res.status(404).json({ error: 'User not found' });
     }
 
+    const walrus = new WalrusStorageService();
+
+    const metadata: WalrusMetadata = {
+      name: "user-progress",
+      userId: "lingua-chain",
+      tags: ["test", "json"]
+    };
+
+    const result = await walrus.storeJson({ user: userExists.walletAddress, lesson, level: language }, metadata);
+
     const userProgress = await prisma.userProgress.upsert({
       where: {
         userId_language: {
@@ -26,11 +38,12 @@ router.post('/', async (req: Request, res: Response) => {
           language,
         },
       },
-      update: { lesson },
+      update: { lesson, blobId: result.blobId },
       create: {
         userId: userExists.id,
         language,
         lesson,
+        blobId: result.blobId
       },
     });
     res.status(201).json(userProgress);

@@ -1,5 +1,7 @@
 import express, { Request, Response } from 'express';
 import prisma from '../lib/prisma';
+import WalrusStorageService from '../services/WalrusStorageService';
+import { WalrusMetadata } from '../services/WalrusStorageService';
 
 const router = express.Router();
 
@@ -31,6 +33,16 @@ router.post('/', async (req: Request, res: Response) => {
       return res.status(404).json({ error: 'User not found. Cannot create daily lesson record.' });
     }
 
+    const walrus = new WalrusStorageService();
+
+    const metadata: WalrusMetadata = {
+      name: "lesson-data",
+      userId: "lingua-chain",
+      tags: ["test", "json"]
+    };
+
+    const result = await walrus.storeJson({ user: userExists.walletAddress, date: dayStart.toUTCString(), lessonsCompleted: lessonsCompleted }, metadata);
+
     const record = await prisma.dailyLessonRecord.upsert({
       where: {
         userId_date: {
@@ -38,19 +50,24 @@ router.post('/', async (req: Request, res: Response) => {
           date: dayStart,
         },
       },
-      update: { lessonsCompleted }, // Or use { lessonsCompleted: { increment: lessonsCompleted } } if additive
+      update: { lessonsCompleted, blobId: result.blobId }, // Or use { lessonsCompleted: { increment: lessonsCompleted } } if additive
       create: {
         userId: userExists.id,
         date: dayStart,
         lessonsCompleted,
+        blobId: result.blobId
       },
       include: { user: { select: { username: true, walletAddress: true } } },
     });
+
+
+
+
     res.status(201).json(record);
   } catch (error: any) {
     // P2003: Foreign key constraint failed on the field: `userId`
     if (error.code === 'P2003' && error.meta?.field_name?.includes('userId')) {
-        return res.status(400).json({ error: `User with ID ${userId} does not exist.` });
+      return res.status(400).json({ error: `User with ID ${userId} does not exist.` });
     }
     console.error('Failed to create/update daily lesson record:', error);
     res.status(500).json({ error: 'Failed to save daily lesson record' });
@@ -59,14 +76,14 @@ router.post('/', async (req: Request, res: Response) => {
 
 // GET /api/daily-lessons - Get daily lesson records (filterable by date range and user)
 router.get('/', async (req: Request, res: Response) => {
-  const { 
-    userId, 
-    startDate, 
-    endDate, 
-    sortBy = 'date', 
-    order = 'desc', 
-    limit = 100, 
-    page = 1 
+  const {
+    userId,
+    startDate,
+    endDate,
+    sortBy = 'date',
+    order = 'desc',
+    limit = 100,
+    page = 1
   } = req.query;
 
   const pageNum = parseInt(String(page), 10);
@@ -74,10 +91,10 @@ router.get('/', async (req: Request, res: Response) => {
   const skip = (pageNum - 1) * limitNum;
 
   if (Number.isNaN(pageNum) || pageNum < 1) {
-    return res.status(400).json({ error: 'Page must be a positive integer.'});
+    return res.status(400).json({ error: 'Page must be a positive integer.' });
   }
   if (Number.isNaN(limitNum) || limitNum < 1 || limitNum > 1000) { // Max limit
-     return res.status(400).json({ error: 'Limit must be a positive integer (max 1000).'});
+    return res.status(400).json({ error: 'Limit must be a positive integer (max 1000).' });
   }
   if (!['date', 'lessonsCompleted', 'createdAt', 'updatedAt'].includes(String(sortBy))) {
     return res.status(400).json({ error: 'Invalid sortBy parameter. Allowed: date, lessonsCompleted, createdAt, updatedAt.' });
@@ -92,8 +109,8 @@ router.get('/', async (req: Request, res: Response) => {
 
     // Filter by userId if provided
     if (userId) {
-      const userExists = await prisma.user.findUnique({ 
-        where: { walletAddress: String(userId).toLowerCase() } 
+      const userExists = await prisma.user.findUnique({
+        where: { walletAddress: String(userId).toLowerCase() }
       });
       if (!userExists) {
         return res.status(404).json({ error: 'User not found.' });
@@ -131,15 +148,15 @@ router.get('/', async (req: Request, res: Response) => {
     });
 
     const totalRecords = await prisma.dailyLessonRecord.count({
-        where: whereClause
+      where: whereClause
     });
 
     res.json({
-        data: records,
-        page: pageNum,
-        limit: limitNum,
-        totalPages: Math.ceil(totalRecords / limitNum),
-        totalRecords
+      data: records,
+      page: pageNum,
+      limit: limitNum,
+      totalPages: Math.ceil(totalRecords / limitNum),
+      totalRecords
     });
   } catch (error) {
     console.error('Failed to retrieve daily lesson records:', error);
@@ -169,19 +186,19 @@ router.get('/:id', async (req: Request, res: Response) => {
 // GET /api/daily-lessons/user/:userId/date/:date - Get a specific record by user and date
 router.get('/user/:userId/date/:date', async (req: Request, res: Response) => {
   const { userId, date } = req.params;
-  
+
   try {
     // Parse and validate date
     const parsedDate = new Date(date);
     if (isNaN(parsedDate.getTime())) {
       return res.status(400).json({ error: 'Invalid date format.' });
     }
-    
+
     const dayStart = new Date(parsedDate.getFullYear(), parsedDate.getMonth(), parsedDate.getDate());
 
     // Check if user exists
-    const userExists = await prisma.user.findUnique({ 
-      where: { walletAddress: userId.toLowerCase() } 
+    const userExists = await prisma.user.findUnique({
+      where: { walletAddress: userId.toLowerCase() }
     });
     if (!userExists) {
       return res.status(404).json({ error: 'User not found.' });
@@ -196,7 +213,7 @@ router.get('/user/:userId/date/:date', async (req: Request, res: Response) => {
       },
       include: { user: { select: { username: true, walletAddress: true } } },
     });
-    
+
     if (record) {
       res.json(record);
     } else {
@@ -249,7 +266,7 @@ router.patch('/:id/increment', async (req: Request, res: Response) => {
   try {
     const updatedRecord = await prisma.dailyLessonRecord.update({
       where: { id },
-      data: { 
+      data: {
         lessonsCompleted: {
           increment: amount
         }

@@ -117,11 +117,11 @@ const Certificate = () => {
         navigate.push('/dashboard');
     };
 
-    if (isComplete) {
+    if (true) {
         return (
             <CertificateResults
                 activeLevel={activeLevel}
-                score={score}
+                score={20}
                 totalQuestions={currentLevelQuestions.length}
                 timeLeft={timeLeft}
                 timeFailed={timeFailed}

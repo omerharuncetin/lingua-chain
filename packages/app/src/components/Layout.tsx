@@ -6,9 +6,11 @@ import { useGetUserProgressAll } from '@/app/hooks/useUserProgressHooks'
 import { usePathname, useRouter } from 'next/navigation'
 import { useCreateUser, useGetUserById } from '@/app/hooks/useUserHooks'
 import { Footer } from './Footer'
+import { useAccount } from 'wagmi'
 
 export function Layout(props: PropsWithChildren) {
   const [equipSent, setEquipSent] = useState(false);
+  const account = useAccount();
   const navigate = useRouter();
   const pathname = usePathname()
   const progressResponse = useGetUserProgressAll();
@@ -23,6 +25,14 @@ export function Layout(props: PropsWithChildren) {
   }, [progressResponse])
 
   useEffect(() => {
+    if (!account.isConnected) {
+      navigate.push('/');
+    } else if (account.isConnected && pathname === '/') {
+      navigate.push('/learning-path')
+    }
+  }, [account, pathname])
+
+  useEffect(() => {
     if (equipSent) return;
     if (currentUser && currentUser.data && currentUser.data.equippedAvatar == null) {
       setEquipSent(true);
@@ -33,9 +43,7 @@ export function Layout(props: PropsWithChildren) {
   return (
     <div className='flex flex-col min-h-screen'>
       <Header />
-
       {props.children}
-
       <Footer />
     </div>
   )

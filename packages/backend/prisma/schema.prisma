@@ -40,6 +40,7 @@ model DailyLessonRecord {
   user             User     @relation(fields: [userId], references: [id], onDelete: Cascade)
   date             DateTime @db.Date // Stores only the date part, effectively tracking by day
   lessonsCompleted Int      @default(0)
+  blobId           String   @default("")
 
   @@unique([userId, date]) // A user has one lesson record per day
 }
@@ -53,6 +54,7 @@ model UserProgress {
   lesson    Int // Current lesson number (1-10)
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+  blobId    String   @default("")
 
   @@unique([userId, language])
 }
@@ -108,7 +110,7 @@ model Certificate {
   issueDate       DateTime @default(now())
   certificateUrl  String // URL to the certificate image/NFT metadata
   tokenId         String // The NFT token ID from the event
-  transactionHash String  @default("test") // transaction hash
+  transactionHash String   @default("test") // transaction hash
   // If a user could have multiple distinct tokens for the same level, this unique constraint would need tokenId.
   // For now, assuming the above is fine and the listener handles logic if a new token for an existing level is minted.
 
@@ -124,7 +126,26 @@ model Badge {
   issueDate       DateTime @default(now())
   badgeUrl        String // URL to the badge image/NFT metadata
   tokenId         String // The NFT token ID from the event
-  transactionHash String  @default("test") // transaction hash
+  transactionHash String   @default("test") // transaction hash
 
   @@unique([userId, languageLevel]) // Assuming one badge per user per level
+}
+
+model WalrusBlob {
+  id          String   @id @default(cuid())
+  blobId      String   @unique
+  objectId    String?
+  name        String?
+  description String?
+  tags        String[] @default([])
+  userId      String?
+  size        Int
+  cost        Int?
+  startEpoch  Int?
+  endEpoch    Int?
+  isDeleted   Boolean  @default(false)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@map("walrus_blobs")
 }

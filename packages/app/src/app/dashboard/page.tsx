@@ -1,13 +1,10 @@
 "use client"
 
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Coins, Star } from "lucide-react";
+import { Coins } from "lucide-react";
 import DashboardHeader from "@/components/dashboard/DashboardHeader";
 import AvatarCard from "@/components/dashboard/AvatarCard";
 import StatsCard from "@/components/dashboard/StatsCard";
 import BadgesTab from "@/components/dashboard/BadgesTab";
-import ProgressTab from "@/components/dashboard/ProgressTab";
-import RewardsTab from "@/components/dashboard/RewardsTab";
 import { useGetUserById } from "../hooks/useUserHooks";
 import { Certificate } from "../hooks/useCertificateHooks";
 import { Badge } from "../hooks/useBadgeHooks";

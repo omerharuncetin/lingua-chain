@@ -53,6 +53,9 @@ COPY --from=builder /app/node_modules/.prisma ./node_modules/.prisma
 # Copy Prisma schema if needed for migrations
 COPY --from=builder /app/prisma ./prisma
 
+# Copy public folder for static assets
+COPY --from=builder /app/public ./public
+
 # Copy .env file if it exists (for development - use secrets in production)
 COPY .env* ./
 

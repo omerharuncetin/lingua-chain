@@ -65,6 +65,8 @@ const CertificateResults = ({
       userDefinedData: certificateAddress.substring(2), // Optional: custom data passed to contract
     }).build();
 
+    toast.info('Scan QR Code with Self to mint certificate')
+
     setSelfApp(selfApp);
     setIsMinting(true);
   }
@@ -105,20 +107,40 @@ const CertificateResults = ({
           <h2 className="text-3xl font-bold mb-4 text-white">
             {timeFailed ? "Time Expired!" : result.passed ? "Exam Passed!" : "Keep Practicing!"}
           </h2>
+          {selfApp && !resultArrived &&
+            <div className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center">
+              <Card className="p-6 bg-slate-900/90 backdrop-blur-xl border border-slate-700/60 max-w-md w-full mx-4 flex flex-col gap-4">
+                <span className="text-lg">Scan QR with Self to Mint Certificate</span>
+                <SelfQRcodeWrapper onError={(error) => {
+                  toast.error('oops');
+                  console.log(error);
+                  setIsMinting(false)
+                  setResultArrived(true);
+                }} selfApp={selfApp} onSuccess={() => {
+                  toast.success('minted!')
+                  setIsMinting(false)
+                  setResultArrived(true);
+                  onMintCertificate();
+                }} />
+              </Card>
+            </div>
+          }
 
-          <div className="mb-6">
-            <p className="text-slate-300 mb-2">Your result:</p>
-            <p className="text-2xl font-bold text-cyan-400 mb-2">{result.level}</p>
-            {!timeFailed && (
-              <>
-                <p className="text-sm text-slate-400">Score: {score}/{totalQuestions} ({Math.round((score / totalQuestions) * 100)}%)</p>
-                <p className="text-sm text-slate-400">Time remaining: {formatTime(timeLeft)}</p>
-              </>
-            )}
-            {timeFailed && (
-              <p className="text-sm text-red-400">You ran out of time to complete the exam</p>
-            )}
-          </div>
+          {!isMinting &&
+            <div className="mb-6">
+              <p className="text-slate-300 mb-2">Your result:</p>
+              <p className="text-2xl font-bold text-cyan-400 mb-2">{result.level}</p>
+              {!timeFailed && (
+                <>
+                  <p className="text-sm text-slate-400">Score: {score}/{totalQuestions} ({Math.round((score / totalQuestions) * 100)}%)</p>
+                  <p className="text-sm text-slate-400">Time remaining: {formatTime(timeLeft)}</p>
+                </>
+              )}
+              {timeFailed && (
+                <p className="text-sm text-red-400">You ran out of time to complete the exam</p>
+              )}
+            </div>
+          }
 
           {result.passed && !timeFailed && (
             <>
@@ -147,17 +169,7 @@ const CertificateResults = ({
                 )}
               </Button>
 
-              {selfApp && !resultArrived && <SelfQRcodeWrapper onError={(error) => {
-                toast.error('oops');
-                console.log(error);
-                setIsMinting(false)
-                setResultArrived(true);
-              }} selfApp={selfApp} onSuccess={() => {
-                toast.success('minted!')
-                setIsMinting(false)
-                setResultArrived(true);
-                onMintCertificate();
-              }} />}
+
             </>
           )}
           {!isMinting &&
